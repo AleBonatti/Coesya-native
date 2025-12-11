@@ -1,0 +1,26 @@
+import React from "react";
+import { View, Text, Image } from "react-native";
+
+const logo = require("../../../assets/logo/logo-coesya.png");
+
+interface AuthHeaderProps {
+    title?: string;
+    subtitle?: string;
+    className?: string;
+}
+
+export function AuthHeader({ title = "Benvenuto in Coesya", subtitle = "Sei pronto a semplificare la gestione familiare? Accedi o crea un account e scopri come!", className = "" }: AuthHeaderProps) {
+    return (
+        <View className={`items-center mb-10 px-6 ${className}`}>
+            <Image
+                source={logo}
+                resizeMode="contain"
+                className="w-28 h-28 mb-4"
+            />
+
+            <Text className="text-xl font-medium my-4 text-center text-text-main">{title}</Text>
+
+            <Text className="text-sm text-text-light text-center max-w-md">{subtitle}</Text>
+        </View>
+    );
+}
