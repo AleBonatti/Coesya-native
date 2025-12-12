@@ -18,8 +18,8 @@ export function Button({ title, onPress, variant = "primary", size = "md", class
 
     const sizeStyles: Record<ButtonSize, string> = {
         sm: "py-2 px-3",
-        md: "py-3 px-4",
-        lg: "py-4 px-5",
+        md: "py-4 px-4",
+        lg: "py-5 px-5",
     };
 
     const variantStyles: Record<ButtonVariant, string> = {

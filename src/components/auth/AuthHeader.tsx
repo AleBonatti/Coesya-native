@@ -9,18 +9,19 @@ interface AuthHeaderProps {
     className?: string;
 }
 
-export function AuthHeader({ title = "Benvenuto in Coesya", subtitle = "Sei pronto a semplificare la gestione familiare? Accedi o crea un account e scopri come!", className = "" }: AuthHeaderProps) {
+export function AuthHeader({ className = "" }: AuthHeaderProps) {
     return (
-        <View className={`items-center mb-10 px-6 ${className}`}>
+        <View className={`items-center mb-10 px-8 ${className}`}>
             <Image
                 source={logo}
                 resizeMode="contain"
                 className="w-28 h-28 mb-4"
             />
 
-            <Text className="text-xl font-medium my-4 text-center text-text-main">{title}</Text>
+            <Text className="text-xl font-medium my-4 text-center text-text-main">Benvenuto in Coesya</Text>
 
-            <Text className="text-sm text-text-light text-center max-w-md">{subtitle}</Text>
+            <Text className="text-sm text-text-main text-center max-w-md">Sei pronto a semplificare la gestione familiare?</Text>
+            <Text className="text-sm text-text-main text-center max-w-md">Accedi o crea un account e scopri come!</Text>
         </View>
     );
 }

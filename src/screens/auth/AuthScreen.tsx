@@ -37,7 +37,7 @@ export function AuthScreen() {
     };
 
     const renderSocialButtons = () => (
-        <View className="mb-6">
+        <View>
             <Pressable
                 onPress={() => {
                     console.log("Login con Apple");
@@ -64,12 +64,14 @@ export function AuthScreen() {
         <View>
             {renderSocialButtons()}
 
+            <Text className="text-center text-text-main my-8">oppure procedi tramite email</Text>
+
             <TextField
                 size="md"
-                label="Username o email"
+                label="Email"
                 value={loginEmail}
                 onChangeText={setLoginEmail}
-                placeholder="tuo@email.com"
+                placeholder="Inserisci la tua email"
                 keyboardType="email-address"
                 autoCapitalize="none"
             />
@@ -183,7 +185,7 @@ export function AuthScreen() {
                         </View>
 
                         {/* Contenuto tab */}
-                        <View className="px-6 bg-auth-form py-12">{activeTab === "login" ? renderLoginForm() : renderRegisterForm()}</View>
+                        <View className="px-8 bg-auth-form py-10">{activeTab === "login" ? renderLoginForm() : renderRegisterForm()}</View>
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
