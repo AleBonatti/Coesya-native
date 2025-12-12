@@ -1,34 +1,47 @@
 import React, { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View, Pressable } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View, Pressable, ActivityIndicator } from "react-native";
+import { useAuthStore } from "../../auth/authStore";
 import { Screen } from "../../components/layout/Screen";
 import { AuthHeader } from "../../components/auth/AuthHeader";
 import { TextField } from "../../components/ui/TextField";
 import { Button } from "../../components/ui/Button";
 import { LinkText } from "../../components/ui/LinkText";
+import { Checkbox, InlineLink } from "../../components/ui/Checkbox";
 
 type AuthTab = "login" | "register";
 
 export function AuthScreen() {
     const [activeTab, setActiveTab] = useState<AuthTab>("login");
 
+    const login = useAuthStore((s) => s.login);
+    const isLoggingIn = useAuthStore((s) => s.isLoggingIn);
+    const fieldErrors = useAuthStore((s) => s.fieldErrors);
+    const error = useAuthStore((s) => s.error);
+
     // stato login
     const [loginEmail, setLoginEmail] = useState<string>("");
     const [loginPassword, setLoginPassword] = useState<string>("");
 
     // stato registrazione (base, poi lo affiniamo)
-    const [registerName, setRegisterName] = useState<string>("");
+    const [registerFirstname, setregisterFirstname] = useState<string>("");
+    const [registerLastname, setRegisterLastname] = useState<string>("");
     const [registerEmail, setRegisterEmail] = useState<string>("");
     const [registerPassword, setRegisterPassword] = useState<string>("");
     const [registerPasswordConfirm, setRegisterPasswordConfirm] = useState<string>("");
+    const [registerPrivacy, setPrivacy] = useState(false);
 
-    const handleLogin = () => {
-        console.log("Login:", { loginEmail, loginPassword });
-        // qui più avanti collegheremo lo store auth o backend
+    const handleLogin = async () => {
+        try {
+            await login({ email: loginEmail, password: loginPassword });
+        } catch {
+            // l'errore è già nello store (error)
+        }
     };
 
     const handleRegister = () => {
         console.log("Register:", {
-            registerName,
+            registerFirstname,
+            registerLastname,
             registerEmail,
             registerPassword,
             registerPasswordConfirm,
@@ -42,7 +55,7 @@ export function AuthScreen() {
                 onPress={() => {
                     console.log("Login con Apple");
                 }}
-                className="flex-row items-center justify-center bg-white rounded-xl py-3 mb-3">
+                className="flex-row items-center justify-center bg-white rounded-xl py-4 mb-3">
                 {/* Placeholder icona Apple */}
                 <View className="w-5 h-5 rounded-full bg-black mr-2" />
                 <Text className="text-slate-900 font-semibold">Accedi con Apple</Text>
@@ -52,7 +65,7 @@ export function AuthScreen() {
                 onPress={() => {
                     console.log("Login con Google");
                 }}
-                className="flex-row items-center justify-center bg-white rounded-xl py-3">
+                className="flex-row items-center justify-center bg-white rounded-xl py-4">
                 {/* Placeholder icona Google */}
                 <View className="w-5 h-5 rounded-sm bg-red-500 mr-2" />
                 <Text className="text-slate-900 font-semibold">Accedi con Google</Text>
@@ -74,6 +87,7 @@ export function AuthScreen() {
                 placeholder="Inserisci la tua email"
                 keyboardType="email-address"
                 autoCapitalize="none"
+                error={fieldErrors.email}
             />
 
             <TextField
@@ -83,6 +97,7 @@ export function AuthScreen() {
                 value={loginPassword}
                 onChangeText={setLoginPassword}
                 placeholder="••••••••"
+                error={fieldErrors.password}
             />
 
             <View className="mb-6">
@@ -90,11 +105,21 @@ export function AuthScreen() {
             </View>
 
             <Button
+                disabled={isLoggingIn}
                 onPress={handleLogin}
-                title="Accedi"
+                title={isLoggingIn ? "Accesso..." : "Accedi"}
             />
 
-            <Text className="text-center text-sm mt-4 font-medium text-text-main">Accedendo, accetti la nostra Informativa sulla Privacy</Text>
+            {error ? <Text className="text-red-500 text-sm mt-3 text-center">{error}</Text> : null}
+
+            <Text className="text-center text-sm mt-4 font-medium text-text-main">
+                Accedendo, accetti la nostra{" "}
+                <Text
+                    onPress={() => {}}
+                    className="text-brand-primary underline">
+                    informativa sulla Privacy
+                </Text>
+            </Text>
         </View>
     );
 
@@ -103,16 +128,16 @@ export function AuthScreen() {
             <TextField
                 size="md"
                 label="Nome"
-                value={registerName}
-                onChangeText={setRegisterName}
+                value={registerFirstname}
+                onChangeText={setregisterFirstname}
                 placeholder="il tuo nome"
             />
 
             <TextField
                 size="md"
                 label="Cognome"
-                value={registerName}
-                onChangeText={setRegisterName}
+                value={registerLastname}
+                onChangeText={setRegisterLastname}
                 placeholder="il tuo cognome"
             />
 
@@ -138,10 +163,22 @@ export function AuthScreen() {
             <TextField
                 size="md"
                 label="Conferma password"
-                value={registerPassword}
-                onChangeText={setRegisterPassword}
+                value={registerPasswordConfirm}
+                onChangeText={setRegisterPasswordConfirm}
                 placeholder="conferma tua password"
                 secureTextEntry
+            />
+
+            <Checkbox
+                checked={registerPrivacy}
+                onChange={setPrivacy}
+                className="mb-8"
+                labelNode={
+                    <Text className="text-sm text-text-main">
+                        Accettando, confermi di aver letto e compreso la nostra <InlineLink onPress={() => console.log("Apri privacy")}>Informativa sulla Privacy</InlineLink>. I tuoi dati saranno trattati in modo sicuro e riservato.
+                    </Text>
+                }
+                size="md"
             />
 
             <Button
@@ -149,11 +186,6 @@ export function AuthScreen() {
                 title="Crea account"
                 variant="secondary"
             />
-            {/* <Pressable
-                onPress={handleRegister}
-                className="bg-emerald-500 rounded-xl py-3.5 items-center justify-center">
-                <Text className="text-white font-semibold text-base">Crea account</Text>
-            </Pressable> */}
         </View>
     );
 
