@@ -15,3 +15,16 @@ export interface LoginResponse {
     token: string;
     user: User;
 }
+export interface RegisterRequest {
+    firstname: string;
+    lastname: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+}
+
+export interface RegisterResponse {
+    success: "ok";
+    token: string;
+    user?: User; // se la restituisci subito da Laravel
+}

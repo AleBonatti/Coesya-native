@@ -15,15 +15,20 @@ export function AuthScreen() {
 
     const login = useAuthStore((s) => s.login);
     const isLoggingIn = useAuthStore((s) => s.isLoggingIn);
-    const fieldErrors = useAuthStore((s) => s.fieldErrors);
+    const register = useAuthStore((s) => s.register);
+    const isRegistering = useAuthStore((s) => s.isRegistering);
     const error = useAuthStore((s) => s.error);
+    const fieldErrors = useAuthStore((s) => s.fieldErrors);
+    const formError = useAuthStore((s) => s.formError);
+    const clearFormError = useAuthStore((s) => s.clearFormError);
+    const clearFieldError = useAuthStore((s) => s.clearFieldError);
 
     // stato login
     const [loginEmail, setLoginEmail] = useState<string>("");
     const [loginPassword, setLoginPassword] = useState<string>("");
 
     // stato registrazione (base, poi lo affiniamo)
-    const [registerFirstname, setregisterFirstname] = useState<string>("");
+    const [registerFirstname, setRegisterFirstname] = useState<string>("");
     const [registerLastname, setRegisterLastname] = useState<string>("");
     const [registerEmail, setRegisterEmail] = useState<string>("");
     const [registerPassword, setRegisterPassword] = useState<string>("");
@@ -38,15 +43,14 @@ export function AuthScreen() {
         }
     };
 
-    const handleRegister = () => {
-        console.log("Register:", {
-            registerFirstname,
-            registerLastname,
-            registerEmail,
-            registerPassword,
-            registerPasswordConfirm,
+    const handleRegister = async () => {
+        await register({
+            firstname: registerFirstname,
+            lastname: registerLastname,
+            email: registerEmail,
+            password: registerPassword,
+            password_confirmation: registerPasswordConfirm,
         });
-        // qui più avanti collegheremo la logica reale di registrazione
     };
 
     const renderSocialButtons = () => (
@@ -83,7 +87,11 @@ export function AuthScreen() {
                 size="md"
                 label="Email"
                 value={loginEmail}
-                onChangeText={setLoginEmail}
+                onChangeText={(value) => {
+                    setLoginEmail(value);
+                    clearFieldError("email");
+                    clearFormError();
+                }}
                 placeholder="Inserisci la tua email"
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -95,7 +103,11 @@ export function AuthScreen() {
                 label="Password"
                 secureTextEntry
                 value={loginPassword}
-                onChangeText={setLoginPassword}
+                onChangeText={(value) => {
+                    setLoginPassword(value);
+                    clearFieldError("password");
+                    clearFormError();
+                }}
                 placeholder="••••••••"
                 error={fieldErrors.password}
             />
@@ -110,6 +122,7 @@ export function AuthScreen() {
                 title={isLoggingIn ? "Accesso..." : "Accedi"}
             />
 
+            {formError ? <Text className="text-red-500 text-sm my-3 text-center">{formError}</Text> : null}
             {error ? <Text className="text-red-500 text-sm mt-3 text-center">{error}</Text> : null}
 
             <Text className="text-center text-sm mt-4 font-medium text-text-main">
@@ -125,38 +138,60 @@ export function AuthScreen() {
 
     const renderRegisterForm = () => (
         <View>
+            {formError ? <Text className="text-red-500 text-sm mb-3 text-center">{formError}</Text> : null}
+
             <TextField
                 size="md"
                 label="Nome"
                 value={registerFirstname}
-                onChangeText={setregisterFirstname}
+                onChangeText={(v) => {
+                    setRegisterFirstname(v);
+                    clearFieldError("firstname");
+                    clearFormError();
+                }}
                 placeholder="il tuo nome"
+                error={fieldErrors.firstname}
             />
 
             <TextField
                 size="md"
                 label="Cognome"
                 value={registerLastname}
-                onChangeText={setRegisterLastname}
+                onChangeText={(v) => {
+                    setRegisterLastname(v);
+                    clearFieldError("lastname");
+                    clearFormError();
+                }}
                 placeholder="il tuo cognome"
+                error={fieldErrors.lastname}
             />
 
             <TextField
                 size="md"
                 label="Email"
                 value={registerEmail}
-                onChangeText={setRegisterEmail}
+                onChangeText={(v) => {
+                    setRegisterEmail(v);
+                    clearFieldError("email");
+                    clearFormError();
+                }}
                 placeholder="insersici la tua email"
                 autoCapitalize="none"
                 keyboardType="email-address"
+                error={fieldErrors.email}
             />
 
             <TextField
                 size="md"
                 label="Password"
                 value={registerPassword}
-                onChangeText={setRegisterPassword}
+                onChangeText={(v) => {
+                    setRegisterPassword(v);
+                    clearFieldError("password");
+                    clearFormError();
+                }}
                 placeholder="inserisci la tua password"
+                error={fieldErrors.password}
                 secureTextEntry
             />
 
@@ -164,8 +199,13 @@ export function AuthScreen() {
                 size="md"
                 label="Conferma password"
                 value={registerPasswordConfirm}
-                onChangeText={setRegisterPasswordConfirm}
+                onChangeText={(v) => {
+                    setRegisterPasswordConfirm(v);
+                    clearFieldError("password_confirmation");
+                    clearFormError();
+                }}
                 placeholder="conferma tua password"
+                error={fieldErrors.password_confirmation}
                 secureTextEntry
             />
 
@@ -182,7 +222,8 @@ export function AuthScreen() {
             />
 
             <Button
-                onPress={handleLogin}
+                disabled={isLoggingIn}
+                onPress={handleRegister}
                 title="Crea account"
                 variant="secondary"
             />
