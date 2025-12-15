@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View, Pressable, ActivityIndicator } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, Text, View, Pressable, ActivityIndicator } from "react-native";
 import { useAuthStore } from "../../auth/authStore";
 import { Screen } from "../../components/layout/Screen";
 import { AuthHeader } from "../../components/auth/AuthHeader";

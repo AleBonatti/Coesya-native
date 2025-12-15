@@ -11,11 +11,11 @@ interface LinkTextProps {
 }
 
 export function LinkText({ children, onPress, variant = "primary", className = "" }: LinkTextProps) {
-    const variantClass = variant === "primary" ? "text-brand-primary" : "text-text-light";
+    const variantClass = "text-white"; //variant === "primary" ? "text-brand-primary" : "text-text-light";
 
     return (
         <Pressable onPress={onPress}>
-            <Text className={`${variantClass} ${className}`}>{children}</Text>
+            <Text className={`font-sans ${variantClass} ${className}`}>{children}</Text>
         </Pressable>
     );
 }

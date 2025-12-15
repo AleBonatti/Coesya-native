@@ -55,9 +55,9 @@ export function Checkbox({ checked, onChange, label, labelNode, size = "md", dis
                     // ✅ label “rich”: deve essere un <Text> con eventuali <Text> annidati
                     labelNode
                 ) : (
-                    <Text className={`text-text-main ${labelSizeClass[size]} ${labelClassName}`}>{label ?? ""}</Text>
+                    <Text className={`font-sans text-text-main ${labelSizeClass[size]} ${labelClassName}`}>{label ?? ""}</Text>
                 )}
-                {error && <Text className="text-xs text-red-500 mt-1">{error}</Text>}
+                {error && <Text className="font-sans text-xs text-red-500 mt-1">{error}</Text>}
             </View>
         </Pressable>
     );

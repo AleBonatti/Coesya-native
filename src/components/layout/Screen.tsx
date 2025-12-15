@@ -8,10 +8,10 @@ interface ScreenProps {
     contentClassName?: string;
 }
 
-export function Screen({ children, backgroundClassName = "bg-auth-bg", contentClassName = "pt-10 pb-6" }: ScreenProps) {
+export function Screen({ children, backgroundClassName = "bg-auth-bg", contentClassName = "" }: ScreenProps) {
     return (
-        <SafeAreaView className={`flex-1 ${backgroundClassName}`}>
-            <View className={`flex-1 ${contentClassName}`}>{children}</View>
+        <SafeAreaView className={`flex-1 w-full ${backgroundClassName}`}>
+            <View className={`flex-1 w-full ${contentClassName}`}>{children}</View>
         </SafeAreaView>
     );
 }

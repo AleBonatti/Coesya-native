@@ -29,7 +29,8 @@ export function Button({ title, onPress, variant = "primary", size = "md", class
     };
 
     const disabledStyles = disabled ? "opacity-50" : "";
-    const textVariant = variant === "ghost" ? "text-base text-brand-primary font-semibold" : "text-base text-white font-semibold";
+    const textVariant = variant === "primary" ? "font-semibold text-white" : variant === "secondary" ? "font-semibold text-brand-darker" : "font-semibold";
+
     const textSize = "text-base";
 
     return (
@@ -43,7 +44,7 @@ export function Button({ title, onPress, variant = "primary", size = "md", class
         ${disabledStyles}
         ${className}
       `}>
-            <Text className={`${textSize} ${textVariant}`}>{title}</Text>
+            <Text className={`font-sans ${textSize} ${textVariant}`}>{title}</Text>
         </Pressable>
     );
 }
