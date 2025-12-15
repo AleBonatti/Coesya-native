@@ -48,6 +48,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
                 throw new ApiError(message, 422, errors);
             }
 
+            if (res.status === 401) {
+                const message = "Invalid data.";
+                const errors = (data as { errors?: ValidationErrors }).errors;
+                throw new ApiError(message, 422, errors);
+            }
+
             const message = data && typeof data === "object" && "message" in (data as Record<string, unknown>) && typeof (data as Record<string, unknown>).message === "string" ? ((data as Record<string, unknown>).message as string) : res.statusText;
 
             throw new ApiError(message, res.status);
