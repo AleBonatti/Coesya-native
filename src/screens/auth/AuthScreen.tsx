@@ -50,6 +50,7 @@ export function AuthScreen() {
             email: registerEmail,
             password: registerPassword,
             password_confirmation: registerPasswordConfirm,
+            privacy: registerPrivacy,
         });
     };
 
@@ -139,7 +140,6 @@ export function AuthScreen() {
     const renderRegisterForm = () => (
         <View>
             {formError ? <Text className="text-red-500 text-sm mb-3 text-center">{formError}</Text> : null}
-
             <TextField
                 size="md"
                 label="Nome"
@@ -152,7 +152,6 @@ export function AuthScreen() {
                 placeholder="il tuo nome"
                 error={fieldErrors.firstname}
             />
-
             <TextField
                 size="md"
                 label="Cognome"
@@ -165,7 +164,6 @@ export function AuthScreen() {
                 placeholder="il tuo cognome"
                 error={fieldErrors.lastname}
             />
-
             <TextField
                 size="md"
                 label="Email"
@@ -180,7 +178,6 @@ export function AuthScreen() {
                 keyboardType="email-address"
                 error={fieldErrors.email}
             />
-
             <TextField
                 size="md"
                 label="Password"
@@ -194,7 +191,6 @@ export function AuthScreen() {
                 error={fieldErrors.password}
                 secureTextEntry
             />
-
             <TextField
                 size="md"
                 label="Conferma password"
@@ -208,11 +204,11 @@ export function AuthScreen() {
                 error={fieldErrors.password_confirmation}
                 secureTextEntry
             />
-
             <Checkbox
                 checked={registerPrivacy}
                 onChange={setPrivacy}
                 className="mb-8"
+                error={fieldErrors.privacy}
                 labelNode={
                     <Text className="text-sm text-text-main">
                         Accettando, confermi di aver letto e compreso la nostra <InlineLink onPress={() => console.log("Apri privacy")}>Informativa sulla Privacy</InlineLink>. I tuoi dati saranno trattati in modo sicuro e riservato.
@@ -220,7 +216,6 @@ export function AuthScreen() {
                 }
                 size="md"
             />
-
             <Button
                 disabled={isLoggingIn}
                 onPress={handleRegister}

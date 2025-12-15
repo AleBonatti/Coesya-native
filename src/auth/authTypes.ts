@@ -21,6 +21,7 @@ export interface RegisterRequest {
     email: string;
     password: string;
     password_confirmation: string;
+    privacy: boolean;
 }
 
 export interface RegisterResponse {

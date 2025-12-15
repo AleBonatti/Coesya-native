@@ -15,9 +15,10 @@ interface CheckboxProps {
     disabled?: boolean;
     className?: string;
     labelClassName?: string;
+    error?: string;
 }
 
-export function Checkbox({ checked, onChange, label, labelNode, size = "md", disabled = false, className = "", labelClassName = "" }: CheckboxProps) {
+export function Checkbox({ checked, onChange, label, labelNode, size = "md", disabled = false, className = "", labelClassName = "", error }: CheckboxProps) {
     const boxSizeClass: Record<CheckboxSize, string> = {
         sm: "w-4 h-4",
         md: "w-5 h-5",
@@ -56,6 +57,7 @@ export function Checkbox({ checked, onChange, label, labelNode, size = "md", dis
                 ) : (
                     <Text className={`text-text-main ${labelSizeClass[size]} ${labelClassName}`}>{label ?? ""}</Text>
                 )}
+                {error && <Text className="text-xs text-red-500 mt-1">{error}</Text>}
             </View>
         </Pressable>
     );

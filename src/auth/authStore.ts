@@ -3,7 +3,7 @@ import { api, ApiError } from "../lib/api";
 import { getToken, removeToken, setToken } from "../lib/secureStore";
 import type { LoginRequest, LoginResponse, User, RegisterRequest, RegisterResponse } from "./authTypes";
 
-type FieldErrorMap = Partial<Record<"firstname" | "lastname" | "email" | "password" | "password_confirmation", string>>;
+type FieldErrorMap = Partial<Record<"firstname" | "lastname" | "email" | "password" | "password_confirmation" | "privacy", string>>;
 
 interface AuthState {
     user: User | null;
@@ -166,6 +166,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                         email: e.validationErrors.email?.[0],
                         password: e.validationErrors.password?.[0],
                         password_confirmation: e.validationErrors.password_confirmation?.[0],
+                        privacy: e.validationErrors.privacy?.[0],
                     },
                 });
                 return;
