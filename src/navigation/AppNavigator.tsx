@@ -1,5 +1,4 @@
 import React from "react";
-import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { DashboardScreen } from "../screens/app/DashboardScreen";
@@ -16,35 +15,25 @@ export type AppStackParamList = {
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
-const TransparentTheme = {
-    ...DefaultTheme,
-    colors: {
-        ...DefaultTheme.colors,
-        background: "transparent",
-    },
-};
-
 export function AppNavigator() {
     return (
-        <NavigationContainer theme={TransparentTheme}>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen
-                    name="Dashboard"
-                    component={DashboardScreen}
-                />
-                <Stack.Screen
-                    name="CreateFamily"
-                    component={CreateFamilyScreen}
-                />
-                <Stack.Screen
-                    name="JoinFamily"
-                    component={JoinFamilyScreen}
-                />
-                <Stack.Screen
-                    name="Settings"
-                    component={SettingsScreen}
-                />
-            </Stack.Navigator>
-        </NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "transparent" } }}>
+            <Stack.Screen
+                name="Dashboard"
+                component={DashboardScreen}
+            />
+            <Stack.Screen
+                name="CreateFamily"
+                component={CreateFamilyScreen}
+            />
+            <Stack.Screen
+                name="JoinFamily"
+                component={JoinFamilyScreen}
+            />
+            <Stack.Screen
+                name="Settings"
+                component={SettingsScreen}
+            />
+        </Stack.Navigator>
     );
 }

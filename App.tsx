@@ -3,12 +3,13 @@ import React, { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from "@expo-google-fonts/inter";
 import { LinearGradient } from "expo-linear-gradient";
+import "react-native-gesture-handler";
 
 import { useAuthStore } from "./src/auth/authStore";
 import { AuthNavigator } from "./src/navigation/AuthNavigator";
 
 import { Text } from "react-native";
-import { AppNavigator } from "./src/navigation/AppNavigator";
+import { RootNavigator } from "./src/navigation/RootNavigator";
 
 export default function App() {
     const [fontsLoaded] = useFonts({
@@ -39,7 +40,7 @@ export default function App() {
                     start={{ x: 0, y: 0 }}
                     end={{ x: 0, y: 1 }}
                     style={{ flex: 1 }}>
-                    <AppNavigator />
+                    <RootNavigator />
                 </LinearGradient>
             ) : (
                 <AuthNavigator />

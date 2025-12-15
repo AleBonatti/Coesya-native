@@ -43,7 +43,7 @@ export function CreateFamilyScreen({ navigation }: Props) {
                     color="#FFFFFF"
                 />
                 <LinkText
-                    onPress={() => {}}
+                    onPress={() => navigation.goBack()}
                     className="text-lg font-medium">
                     Nuova famiglia
                 </LinkText>
