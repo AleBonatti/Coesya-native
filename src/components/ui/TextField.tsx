@@ -31,7 +31,7 @@ export function TextField({ label, size = "md", error, className = "", ...props 
 
     return (
         <View className="mb-4">
-            {label && <Text className="text-base font-medium text-text-light mb-2">{label}</Text>}
+            {label && <Text className="font-sans text-base font-medium text-text-light mb-2">{label}</Text>}
             <TextInput
                 {...props}
                 onFocus={(e) => {
@@ -45,15 +45,14 @@ export function TextField({ label, size = "md", error, className = "", ...props 
                 placeholderTextColor="#868686"
                 style={[webNoOutlineStyle, props.style]}
                 className={`
-                    rounded-xl text-text-main
-                    border
+                    font-sans rounded-xl text-text-main border bg-auth-bg
                     ${error ? "border-red-500" : "border-transparent"}
-                    ${isFocused && !error ? "bg-brand-primary/10" : "bg-auth-bg"}
                     ${sizeStyles[size]}
                     ${className}
                 `}
             />
-            {error && <Text className="text-xs text-red-500 mt-1">{error}</Text>}
+            {error && <Text className="font-sans text-xs text-red-500 mt-1">{error}</Text>}
         </View>
+        /* ${isFocused && !error ? "bg-brand-primary/10" : "bg-auth-bg"} */
     );
 }
