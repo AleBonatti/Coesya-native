@@ -19,6 +19,7 @@ interface AuthState {
     bootstrap: () => Promise<void>;
     login: (data: LoginRequest) => Promise<void>;
     logout: () => Promise<void>;
+    refreshMe: () => Promise<void>;
 
     clearFormError: () => void;
     clearFieldError: (field: keyof FieldErrorMap) => void;
@@ -184,6 +185,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                 fieldErrors: {},
             });
         }
+    },
+
+    refreshMe: async () => {
+        const me = await api.get<User>("/me");
+        set({ user: me });
     },
 
     clearFieldError: (field) =>
