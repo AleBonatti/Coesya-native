@@ -1,17 +1,19 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { DashboardScreen } from "../screens/app/DashboardScreen";
-import { CreateFamilyScreen } from "../screens/app/CreateFamilyScreen";
-import { JoinFamilyScreen } from "../screens/app/JoinFamilyScreen";
+//import { DashboardScreen } from "../screens/app/DashboardScreen";
+//import { CreateFamilyScreen } from "../screens/app/CreateFamilyScreen";
+//import { JoinFamilyScreen } from "../screens/app/JoinFamilyScreen";
 
 import { ProfileScreen } from "../screens/app/ProfileScreen";
-import { NotificationsScreen } from "../screens/app/NotificationsScreen";
+//import { NotificationsScreen } from "../screens/app/NotificationsScreen";
 /* import { ThemeScreen } from "../screens/app/ThemeScreen"; */
 import { PrivacyScreen } from "../screens/app/PrivacyScreen";
 import { ResetDataScreen } from "../screens/app/ResetDataScreen";
+import { FamilyHomeScreen } from "../screens/app/FamilyHomeScreen";
 
 export type AppStackParamList = {
+    FamilyHome: undefined;
     Dashboard: undefined;
     CreateFamily: undefined;
     JoinFamily: undefined;
@@ -30,6 +32,10 @@ export function AppNavigator() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "transparent" } }}>
             <Stack.Screen
+                name="FamilyHome"
+                component={FamilyHomeScreen}
+            />
+            {/* <Stack.Screen
                 name="Dashboard"
                 component={DashboardScreen}
             />
@@ -40,7 +46,7 @@ export function AppNavigator() {
             <Stack.Screen
                 name="JoinFamily"
                 component={JoinFamilyScreen}
-            />
+            /> */}
             <Stack.Screen
                 name="Profile"
                 component={ProfileScreen}
