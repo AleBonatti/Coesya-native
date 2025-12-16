@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, Image } from "react-native";
+import { View, Image } from "react-native";
+import { AppText } from "../ui/AppText";
 
 const logo = require("../../../assets/logo/logo-coesya.png");
 
@@ -18,10 +19,24 @@ export function AuthHeader({ className = "" }: AuthHeaderProps) {
                 className="w-28 h-28 mb-4"
             />
 
-            <Text className="text-xl font-medium my-4 text-center text-text-main">Benvenuto in Coesya</Text>
+            <AppText
+                className="text-xl font-medium my-4 text-center text-text-main"
+                variant="dark"
+                weight="medium">
+                Benvenuto in Coesya
+            </AppText>
 
-            <Text className="text-sm text-text-main text-center max-w-md">Sei pronto a semplificare la gestione familiare?</Text>
-            <Text className="text-sm text-text-main text-center max-w-md">Accedi o crea un account e scopri come!</Text>
+            <AppText
+                variant="dark"
+                className="text-sm text-center max-w-md">
+                Sei pronto a semplificare la gestione familiare?
+            </AppText>
+
+            <AppText
+                variant="dark"
+                className="text-sm text-center max-w-md">
+                Accedi o crea un account e scopri come!
+            </AppText>
         </View>
     );
 }

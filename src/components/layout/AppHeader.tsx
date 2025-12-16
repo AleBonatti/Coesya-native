@@ -1,7 +1,7 @@
 import React from "react";
 import { Image, Pressable, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { DrawerActions, StackActions, useNavigation, type NavigationProp } from "@react-navigation/native";
+import { DrawerActions, useNavigation, type NavigationProp } from "@react-navigation/native";
 import type { AppStackParamList } from "../../navigation/AppNavigator";
 
 const logo = require("../../../assets/logo/logo-coesya-transparent.png");
@@ -11,10 +11,24 @@ type Nav = NavigationProp<AppStackParamList>;
 export function AppHeader() {
     const navigation = useNavigation<Nav>();
 
+    const handleLogoPress = () => {
+        // chiudi drawer se presente (se non c'è, viene ignorato senza problemi)
+        navigation.dispatch(DrawerActions.closeDrawer());
+
+        // se siamo in una schermata secondaria, torna indietro
+        if (navigation.canGoBack()) {
+            navigation.goBack();
+            return;
+        }
+
+        // altrimenti vai alla dashboard (no duplicati, perché non può andare back)
+        navigation.navigate("Dashboard");
+    };
+
     return (
         <View className="w-full flex-row px-6 pt-4 items-center justify-between">
             <Pressable
-                onPress={() => navigation.dispatch(StackActions.popToTop())}
+                onPress={handleLogoPress}
                 className="p-2">
                 <Image
                     source={logo}
@@ -25,7 +39,6 @@ export function AppHeader() {
 
             <Pressable
                 onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-                className="p-2"
                 accessibilityRole="button"
                 accessibilityLabel="Impostazioni">
                 <Feather

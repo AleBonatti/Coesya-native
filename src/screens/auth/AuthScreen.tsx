@@ -7,6 +7,7 @@ import { TextField } from "../../components/ui/TextField";
 import { Button } from "../../components/ui/Button";
 import { LinkText } from "../../components/ui/LinkText";
 import { Checkbox, InlineLink } from "../../components/ui/Checkbox";
+import { AppText } from "../../components/ui/AppText";
 
 type AuthTab = "login" | "register";
 
@@ -82,7 +83,11 @@ export function AuthScreen() {
         <View>
             {renderSocialButtons()}
 
-            <Text className="text-center text-text-main my-8">oppure procedi tramite email</Text>
+            <AppText
+                variant="dark"
+                className="text-center my-8">
+                oppure procedi tramite email
+            </AppText>
 
             <TextField
                 size="md"
@@ -114,7 +119,11 @@ export function AuthScreen() {
             />
 
             <View className="mb-6">
-                <LinkText onPress={() => {}}>Password dimenticata?</LinkText>
+                <LinkText
+                    onPress={() => {}}
+                    className="text-brand-primary">
+                    Password dimenticata?
+                </LinkText>
             </View>
 
             <Button

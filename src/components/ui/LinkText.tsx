@@ -10,8 +10,10 @@ interface LinkTextProps {
     className?: string;
 }
 
+// TODO impostare le variant
+
 export function LinkText({ children, onPress, variant = "primary", className = "" }: LinkTextProps) {
-    const variantClass = "text-white"; //variant === "primary" ? "text-brand-primary" : "text-text-light";
+    const variantClass = variant === "primary" ? "text-white" : "text-brand-primary";
 
     return (
         <Pressable onPress={onPress}>
