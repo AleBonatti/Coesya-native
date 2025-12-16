@@ -6,10 +6,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import "react-native-gesture-handler";
 
 import { useAuthStore } from "./src/auth/authStore";
-import { AuthNavigator } from "./src/navigation/AuthNavigator";
+//import { AuthNavigator } from "./src/navigation/AuthNavigator";
 
 import { Text } from "react-native";
-import { RootNavigator } from "./src/navigation/RootNavigator";
+//import { RootNavigator } from "./src/navigation/RootNavigator";
+import { AppGate } from "./src/navigation/AppGate";
 
 export default function App() {
     const [fontsLoaded] = useFonts({
@@ -19,11 +20,13 @@ export default function App() {
         Inter_700Bold,
     });
 
-    const bootstrap = useAuthStore((s) => s.bootstrap);
-    const isBootstrapping = useAuthStore((s) => s.isBootstrapping);
-    const token = useAuthStore((s) => s.token);
+    return <AppGate />;
 
-    useEffect(() => {
+    //const bootstrap = useAuthStore((s) => s.bootstrap);
+    //const isBootstrapping = useAuthStore((s) => s.isBootstrapping);
+    //const token = useAuthStore((s) => s.token);
+
+    /* useEffect(() => {
         void bootstrap();
     }, [bootstrap]);
 
@@ -34,6 +37,7 @@ export default function App() {
     return (
         <>
             <StatusBar style="light" />
+            <AppGate />
             {token ? (
                 <LinearGradient
                     colors={["#A76D99", "#5E134C"]}
@@ -46,5 +50,5 @@ export default function App() {
                 <AuthNavigator />
             )}
         </>
-    );
+    ); */
 }

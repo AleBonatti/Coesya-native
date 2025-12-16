@@ -3,6 +3,8 @@ import { View, Image } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AppStackParamList } from "../../navigation/AppNavigator";
 
+import { useAuthStore } from "../../auth/authStore";
+
 import { Feather } from "@expo/vector-icons";
 import { AppShell } from "../../components/layout/AppShell";
 import { AppText } from "../../components/ui/AppText";
@@ -25,10 +27,13 @@ export function CreateFamilyScreen({ navigation }: Props) {
     const clearFieldError = useFamilyStore((s) => s.clearFieldError);
     const clearFormError = useFamilyStore((s) => s.clearFormError);
 
+    const refreshMe = useAuthStore((s) => s.refreshMe);
+
     const handleSave = async () => {
         try {
             await createFamily({ name: name.trim() });
-            navigation.navigate("Dashboard"); // oppure navigation.goBack();
+            await refreshMe();
+            //navigation.navigate("Dashboard"); // oppure navigation.goBack();
         } catch {
             // errori già gestiti nello store
         }

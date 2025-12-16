@@ -3,6 +3,22 @@ export interface User {
     firstname: string;
     lastname: string;
     email: string;
+    families: Family[];
+}
+export interface FamilyPivot {
+    user_id: number;
+    family_id: number;
+    current: 0 | 1;
+}
+
+export interface Family {
+    id: number;
+    name: string;
+    profile_photo_path: string | null;
+    profile_photo_url: string;
+    created_at: string;
+    updated_at: string;
+    pivot: FamilyPivot;
 }
 
 export interface LoginRequest {
