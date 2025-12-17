@@ -2,12 +2,13 @@ import React from "react";
 import { Text, View } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import type { AppStackParamList } from "../../navigation/AppNavigator";
+//import type { AppStackParamList } from "../../navigation/AppNavigator";
+import type { MainStackParamList } from "../../navigation/MainStackParamList";
 import { AppShell } from "../../components/layout/AppShell";
 import { Button } from "../../components/ui/Button";
 import { AppText } from "../../components/ui/AppText";
 
-type Props = NativeStackScreenProps<AppStackParamList, "Dashboard">;
+type Props = NativeStackScreenProps<MainStackParamList, "Dashboard">;
 
 export function DashboardScreen({ navigation }: Props) {
     return (

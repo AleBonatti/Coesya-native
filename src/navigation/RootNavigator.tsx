@@ -1,19 +1,24 @@
 import React from "react";
 import { NavigationContainer, DefaultTheme, type NavigatorScreenParams } from "@react-navigation/native";
-import { createDrawerNavigator, DrawerContentScrollView, type DrawerContentComponentProps } from "@react-navigation/drawer";
+import { createDrawerNavigator, DrawerContentScrollView, type DrawerContentComponentProps, type DrawerNavigationProp } from "@react-navigation/drawer";
+
+import type { MainStackParamList } from "./MainStackParamList";
+import { CommonActions } from "@react-navigation/native";
+
 import { Pressable, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 
-import { AppNavigator, type AppStackParamList } from "./AppNavigator"; // il tuo stack attuale
 import { AppText, type TextVariant } from "../components/ui/AppText";
 import { useAuthStore } from "../auth/authStore";
+import { MainStack } from "./MainStack";
 
 export type RootDrawerParamList = {
-    Main: NavigatorScreenParams<AppStackParamList>;
+    Main: NavigatorScreenParams<MainStackParamList>;
 };
 
 const Drawer = createDrawerNavigator<RootDrawerParamList>();
+type RootDrawerNav = DrawerNavigationProp<RootDrawerParamList>;
 
 const TransparentTheme = {
     ...DefaultTheme,
@@ -28,7 +33,7 @@ function DrawerItem({ label, variante = "primary", onPress }: { label: string; v
             <AppText
                 variant={variante}
                 weight="semibold"
-                className="font-semibold text-base">
+                className="text-base">
                 {label}
             </AppText>
         </Pressable>
@@ -38,8 +43,13 @@ function DrawerItem({ label, variante = "primary", onPress }: { label: string; v
 function DrawerContent({ navigation }: DrawerContentComponentProps) {
     const logout = useAuthStore((s) => s.logout);
 
-    const go = (screen: keyof AppStackParamList) => {
-        navigation.navigate("Main", { screen });
+    const go = (screen: keyof MainStackParamList) => {
+        navigation.dispatch(
+            CommonActions.navigate({
+                name: "Main",
+                params: { screen },
+            })
+        );
         navigation.closeDrawer();
     };
 
@@ -103,7 +113,7 @@ function DrawerContent({ navigation }: DrawerContentComponentProps) {
     );
 }
 
-export function RootNavigator() {
+export function RootNavigator({ hasFamily }: { hasFamily: boolean }) {
     return (
         <NavigationContainer theme={TransparentTheme}>
             <Drawer.Navigator
@@ -114,10 +124,7 @@ export function RootNavigator() {
                     drawerStyle: { backgroundColor: "transparent" },
                 }}
                 drawerContent={(props) => <DrawerContent {...props} />}>
-                <Drawer.Screen
-                    name="Main"
-                    component={AppNavigator}
-                />
+                <Drawer.Screen name="Main">{() => <MainStack hasFamily={hasFamily} />}</Drawer.Screen>
             </Drawer.Navigator>
         </NavigationContainer>
     );

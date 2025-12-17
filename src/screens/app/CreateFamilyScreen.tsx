@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { View, Image } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { AppStackParamList } from "../../navigation/AppNavigator";
+//import type { AppStackParamList } from "../../navigation/AppNavigator";
+import type { MainStackParamList } from "../../navigation/MainStackParamList";
 
 import { useAuthStore } from "../../auth/authStore";
 
@@ -15,7 +16,7 @@ import { useFamilyStore } from "../../family/familyStore";
 
 const logo = require("../../../assets/upload.png");
 
-type Props = NativeStackScreenProps<AppStackParamList, "CreateFamily">;
+type Props = NativeStackScreenProps<MainStackParamList, "CreateFamily">;
 
 export function CreateFamilyScreen({ navigation }: Props) {
     const [name, setName] = useState<string>("");
@@ -33,7 +34,12 @@ export function CreateFamilyScreen({ navigation }: Props) {
         try {
             await createFamily({ name: name.trim() });
             await refreshMe();
-            //navigation.navigate("Dashboard"); // oppure navigation.goBack();
+
+            navigation.reset({
+                index: 0,
+                routes: [{ name: "FamilyHome" }],
+            });
+            //console.log(useAuthStore.getState().user, "families:", useAuthStore.getState().user?.families);
         } catch {
             // errori già gestiti nello store
         }
@@ -48,6 +54,7 @@ export function CreateFamilyScreen({ navigation }: Props) {
                     color="#FFFFFF"
                 />
                 <LinkText
+                    variant="secondary"
                     onPress={() => navigation.goBack()}
                     className="text-lg font-medium">
                     Nuova famiglia

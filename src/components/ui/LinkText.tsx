@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, Pressable } from "react-native";
 
-type LinkVariant = "primary" | "muted";
+type LinkVariant = "primary" | "secondary" | "dark" | "muted";
 
 interface LinkTextProps {
     children: string;
@@ -10,14 +10,17 @@ interface LinkTextProps {
     className?: string;
 }
 
-// TODO impostare le variant
+const variantClasses: Record<LinkVariant, string> = {
+    primary: "text-brand-primary",
+    dark: "text-text-main",
+    secondary: "text-white",
+    muted: "text-brand-darker",
+};
 
 export function LinkText({ children, onPress, variant = "primary", className = "" }: LinkTextProps) {
-    const variantClass = variant === "primary" ? "text-white" : "text-brand-primary";
-
     return (
         <Pressable onPress={onPress}>
-            <Text className={`font-sans ${variantClass} ${className}`}>{children}</Text>
+            <Text className={`font-sans ${variantClasses[variant]} ${className}`}>{children}</Text>
         </Pressable>
     );
 }

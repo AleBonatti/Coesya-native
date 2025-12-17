@@ -2,27 +2,31 @@ import React from "react";
 import { Image, Pressable, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { DrawerActions, useNavigation, type NavigationProp } from "@react-navigation/native";
-import type { AppStackParamList } from "../../navigation/AppNavigator";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { MainStackParamList } from "../../navigation/MainStackParamList";
+import { useAuthStore } from "../../auth/authStore";
+import { hasAnyFamily } from "../../auth/authSelectors";
 
 const logo = require("../../../assets/logo/logo-coesya-transparent.png");
 
-type Nav = NavigationProp<AppStackParamList>;
+type Nav = NativeStackNavigationProp<MainStackParamList>;
 
 export function AppHeader() {
     const navigation = useNavigation<Nav>();
+    const user = useAuthStore((s) => s.user);
 
     const handleLogoPress = () => {
         // chiudi drawer se presente (se non c'è, viene ignorato senza problemi)
         navigation.dispatch(DrawerActions.closeDrawer());
 
-        // se siamo in una schermata secondaria, torna indietro
+        // torna alla root dello stack corrente (se possibile)
         if (navigation.canGoBack()) {
-            navigation.goBack();
-            return;
+            navigation.popToTop();
         }
 
-        // altrimenti vai alla dashboard (no duplicati, perché non può andare back)
-        navigation.navigate("Dashboard");
+        // vai alla “home” corretta senza duplicare
+        const home = hasAnyFamily(user) ? "FamilyHome" : "Dashboard";
+        navigation.navigate(home);
     };
 
     return (
