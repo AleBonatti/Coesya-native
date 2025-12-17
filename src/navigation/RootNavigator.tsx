@@ -25,21 +25,6 @@ const TransparentTheme = {
     colors: { ...DefaultTheme.colors, background: "transparent" },
 };
 
-function DrawerItem({ label, variante = "primary", onPress }: { label: string; variante?: TextVariant; onPress: () => void }) {
-    return (
-        <Pressable
-            onPress={onPress}
-            className="w-full rounded-xl px-4 py-4 bg-brand-primary active:bg-white/15">
-            <AppText
-                variant={variante}
-                weight="semibold"
-                className="text-base">
-                {label}
-            </AppText>
-        </Pressable>
-    );
-}
-
 function DrawerContent({ navigation }: DrawerContentComponentProps) {
     const logout = useAuthStore((s) => s.logout);
 
@@ -64,6 +49,7 @@ function DrawerContent({ navigation }: DrawerContentComponentProps) {
                 style={{ padding: 0 }}>
                 <View className="flex-row items-center justify-between px-6 pt-6 pb-6">
                     <AppText
+                        variant="light"
                         className="text-xl"
                         weight="semibold">
                         Settings
@@ -115,17 +101,52 @@ function DrawerContent({ navigation }: DrawerContentComponentProps) {
 
 export function RootNavigator({ hasFamily }: { hasFamily: boolean }) {
     return (
-        <NavigationContainer theme={TransparentTheme}>
-            <Drawer.Navigator
-                screenOptions={{
-                    headerShown: false,
-                    drawerType: "front",
-                    // IMPORTANTE: lascia trasparente lo “scheletro” del drawer, perché il gradient lo disegniamo noi nel contenuto.
-                    drawerStyle: { backgroundColor: "transparent" },
-                }}
-                drawerContent={(props) => <DrawerContent {...props} />}>
-                <Drawer.Screen name="Main">{() => <MainStack hasFamily={hasFamily} />}</Drawer.Screen>
-            </Drawer.Navigator>
-        </NavigationContainer>
+        <RootBackground hasFamily={hasFamily}>
+            <NavigationContainer theme={TransparentTheme}>
+                <Drawer.Navigator
+                    screenOptions={{
+                        headerShown: false,
+                        drawerType: "front",
+                        // IMPORTANTE: lascia trasparente lo “scheletro” del drawer, perché il gradient lo disegniamo noi nel contenuto.
+                        drawerStyle: { backgroundColor: "transparent" },
+                    }}
+                    drawerContent={(props) => <DrawerContent {...props} />}>
+                    <Drawer.Screen name="Main">{() => <MainStack hasFamily={hasFamily} />}</Drawer.Screen>
+                </Drawer.Navigator>
+            </NavigationContainer>
+        </RootBackground>
+    );
+}
+
+function DrawerItem({ label, variante = "light", onPress }: { label: string; variante?: TextVariant; onPress: () => void }) {
+    return (
+        <Pressable
+            onPress={onPress}
+            className="w-full rounded-xl px-4 py-4 bg-brand-primary active:bg-white/15">
+            <AppText
+                variant={variante}
+                weight="semibold"
+                className="text-base">
+                {label}
+            </AppText>
+        </Pressable>
+    );
+}
+
+function RootBackground({ hasFamily, children }: { hasFamily: boolean; children: React.ReactNode }) {
+    if (hasFamily) {
+        // niente gradient
+        return <View style={{ flex: 1 }}>{children}</View>;
+    }
+
+    // gradient solo onboarding famiglia
+    return (
+        <LinearGradient
+            colors={["#A76D99", "#5E134C"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={{ flex: 1 }}>
+            {children}
+        </LinearGradient>
     );
 }

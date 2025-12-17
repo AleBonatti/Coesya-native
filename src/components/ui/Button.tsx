@@ -29,7 +29,7 @@ export function Button({ title, onPress, variant = "primary", size = "md", class
     };
 
     const disabledStyles = disabled ? "opacity-50" : "";
-    const textVariant = variant === "primary" ? "font-sansSemibold text-white" : variant === "secondary" ? "font-sansSemibold text-white" : "font-sansSemibold";
+    const textVariant = variant === "primary" ? "font-sansSemibold text-white" : variant === "secondary" ? "font-sans Semibold text-brand-darker" : "font-sansSemibold";
 
     const textSize = "text-base";
 

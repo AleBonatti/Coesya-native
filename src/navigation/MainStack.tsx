@@ -6,7 +6,7 @@ import { DashboardScreen } from "../screens/app/DashboardScreen";
 import { CreateFamilyScreen } from "../screens/app/CreateFamilyScreen";
 import { JoinFamilyScreen } from "../screens/app/JoinFamilyScreen";
 
-import { FamilyHomeScreen } from "../screens/app/FamilyHomeScreen";
+import { FamilyTabs } from "./FamilyTabs";
 
 import { ProfileScreen } from "../screens/app/ProfileScreen";
 import { NotificationsScreen } from "../screens/app/NotificationsScreen";
@@ -19,7 +19,7 @@ const Stack = createNativeStackNavigator<MainStackParamList>();
 export function MainStack({ hasFamily }: { hasFamily: boolean }) {
     return (
         <Stack.Navigator
-            initialRouteName={hasFamily ? "FamilyHome" : "Dashboard"}
+            initialRouteName={hasFamily ? "FamilyTabs" : "Dashboard"}
             screenOptions={{
                 headerShown: false,
                 contentStyle: { backgroundColor: "transparent" },
@@ -40,8 +40,8 @@ export function MainStack({ hasFamily }: { hasFamily: boolean }) {
 
             {/* Family */}
             <Stack.Screen
-                name="FamilyHome"
-                component={FamilyHomeScreen}
+                name="FamilyTabs"
+                component={FamilyTabs}
             />
 
             {/* Account */}

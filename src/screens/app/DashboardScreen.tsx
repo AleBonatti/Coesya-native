@@ -12,20 +12,33 @@ type Props = NativeStackScreenProps<MainStackParamList, "Dashboard">;
 
 export function DashboardScreen({ navigation }: Props) {
     return (
-        <AppShell>
+        <AppShell backgroundClassName="bg-transparent">
             <View className="flex-1 justify-end pb-6">
                 <View className="gap-8">
-                    <AppText className="text-xl">Crea la tua famiglia</AppText>
-
-                    <AppText className="text-sm">Benvenuto! Per iniziare, scegli se creare una nuova famiglia o unirti a una esistente. Potrai organizzare i tuoi impegni e collaborare facilmente con gli altri membri.</AppText>
+                    <AppText
+                        variant="light"
+                        className="text-xl">
+                        Crea la tua famiglia
+                    </AppText>
 
                     <AppText
+                        variant="light"
+                        className="text-sm">
+                        Benvenuto! Per iniziare, scegli se creare una nuova famiglia o unirti a una esistente. Potrai organizzare i tuoi impegni e collaborare facilmente con gli altri membri.
+                    </AppText>
+
+                    <AppText
+                        variant="light"
                         className="text-base"
                         weight="medium">
                         Unisciti a una famiglia esistente.
                     </AppText>
 
-                    <AppText className="text-sm">Se hai ricevuto un invito, puoi unirti direttamente a una famiglia esistente usando il codice di invito. Assicurati di averlo a portata di mano per procedere senza creare una nuova famiglia.</AppText>
+                    <AppText
+                        variant="light"
+                        className="text-sm">
+                        Se hai ricevuto un invito, puoi unirti direttamente a una famiglia esistente usando il codice di invito. Assicurati di averlo a portata di mano per procedere senza creare una nuova famiglia.
+                    </AppText>
 
                     <View className="gap-3">
                         <Button

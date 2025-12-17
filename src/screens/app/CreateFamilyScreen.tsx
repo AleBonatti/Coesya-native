@@ -37,7 +37,7 @@ export function CreateFamilyScreen({ navigation }: Props) {
 
             navigation.reset({
                 index: 0,
-                routes: [{ name: "FamilyHome" }],
+                routes: [{ name: "FamilyTabs" }],
             });
             //console.log(useAuthStore.getState().user, "families:", useAuthStore.getState().user?.families);
         } catch {
@@ -46,7 +46,7 @@ export function CreateFamilyScreen({ navigation }: Props) {
     };
 
     return (
-        <AppShell>
+        <AppShell backgroundClassName="bg-transparent">
             <View className="flex-row items-center mb-6 mt-4 gap-3">
                 <Feather
                     name="chevron-left"
@@ -60,7 +60,7 @@ export function CreateFamilyScreen({ navigation }: Props) {
                     Nuova famiglia
                 </LinkText>
             </View>
-            <AppText>Assegna un nome alla tua nuova famiglia. Può essere il cognome di famiglia o un titolo originale: lascia spazio alla tua creatività! Non preoccuparti, potrai cambiarlo in seguito.</AppText>
+            <AppText variant="light">Assegna un nome alla tua nuova famiglia. Può essere il cognome di famiglia o un titolo originale: lascia spazio alla tua creatività! Non preoccuparti, potrai cambiarlo in seguito.</AppText>
 
             <View className="items-center justify-center">
                 <Image
