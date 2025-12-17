@@ -6,7 +6,7 @@ import { useAuthStore } from "../auth/authStore";
 import { AuthNavigator } from "./AuthNavigator";
 import { RootNavigator } from "./RootNavigator"; // drawer + stack famiglia
 import { hasAnyFamily } from "../auth/authSelectors";
-import { FamilyOnboardingNavigator } from "./FamilyOnboardingNavigator"; // stack crea/join
+//import { FamilyOnboardingNavigator } from "./FamilyOnboardingNavigator"; // stack crea/join
 
 export function AppGate({ fontsLoaded }: { fontsLoaded: boolean }) {
     const bootstrap = useAuthStore((s) => s.bootstrap);
@@ -35,13 +35,17 @@ export function AppGate({ fontsLoaded }: { fontsLoaded: boolean }) {
     return (
         <>
             <StatusBar style="light" />
+            {/* {hasAnyFamily(user) ? (
+                <RootNavigator />
+            ) : ( */}
             <LinearGradient
                 colors={["#A76D99", "#5E134C"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 0, y: 1 }}
                 style={{ flex: 1 }}>
-                {hasAnyFamily(user) ? <RootNavigator /> : <FamilyOnboardingNavigator />}
+                <RootNavigator hasFamily={hasAnyFamily(user)} />
             </LinearGradient>
+            {/* )} */}
         </>
     );
 }

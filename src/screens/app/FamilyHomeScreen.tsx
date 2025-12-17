@@ -4,26 +4,24 @@ import { AppShell } from "../../components/layout/AppShell";
 import { AppText } from "../../components/ui/AppText";
 import { useAuthStore } from "../../auth/authStore";
 import { getCurrentFamily, hasAnyFamily } from "../../auth/authSelectors";
-import { useNavigation, type NavigationProp } from "@react-navigation/native";
-import type { AppStackParamList } from "../../navigation/AppNavigator";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { type MainStackParamList } from "../../navigation/MainStackParamList";
+
+type Nav = NativeStackNavigationProp<MainStackParamList>;
 
 export function FamilyHomeScreen() {
     const user = useAuthStore((s) => s.user);
-    const navigation = useNavigation<NavigationProp<AppStackParamList>>();
+    const navigation = useNavigation<Nav>();
 
     const family = getCurrentFamily(user);
 
     // Edge case: per qualche motivo siamo qui senza famiglie
     useEffect(() => {
         if (!hasAnyFamily(user)) {
-            // Se usi AppGate, puoi anche non fare niente: al prossimo render cambierà flow.
-            // Ma questo rende la UX più immediata.
-            navigation.reset({
-                index: 0,
-                routes: [{ name: "FamilyHome" }], // placeholder: vedi nota sotto
-            });
+            navigation.reset({ index: 0, routes: [{ name: "Dashboard" }] });
         }
-    }, [user, navigation]);
+    }, [user?.families?.length, navigation]);
 
     return (
         <AppShell>
