@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { api, ApiError } from "../lib/api";
-import type { CreateFamilyRequest, CreateFamilyResponse, Family, UpdateFamilyRequest, UpdateFamilyResponse } from "./familyTypes";
+import type { CreateFamilyRequest, CreateFamilyResponse, Family, UpdateFamilyRequest, UpdateFamilyResponse, UploadFamilyPhotoResponse } from "./familyTypes";
 
 type FamilyFieldErrorMap = Partial<Record<"name", string>>;
 
@@ -132,5 +132,24 @@ export const useFamilyStore = create<FamilyState>((set) => ({
             });
             throw e;
         }
+    },
+
+    uploadFamilyPhoto: async (familyId: number, asset: { uri: string; fileName?: string | null; mimeType?: string | null }) => {
+        const form = new FormData();
+
+        // su mobile serve oggetto con uri/name/type
+        form.append("photo", {
+            uri: asset.uri,
+            name: asset.fileName ?? `family-${familyId}.jpg`,
+            type: asset.mimeType ?? "image/jpeg",
+        } as unknown as Blob); // TS: RN FormData non tipa bene (ma runtime ok)
+
+        const res = await api.post<UploadFamilyPhotoResponse>(`/family/${familyId}/uploadPhoto`, form);
+
+        if (res.success !== "ok") {
+            throw new Error("Upload failed");
+        }
+
+        return res.success;
     },
 }));

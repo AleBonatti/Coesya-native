@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, ImageBackground, Pressable } from "react-native";
 import { useDebounce } from "../../../hooks/useDebounce";
-import { Feather } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import { AppShell } from "../../../components/layout/AppShell";
 import { useAuthStore } from "../../../auth/authStore";
 import { useFamilyStore } from "../../../family/familyStore";
@@ -46,6 +46,7 @@ export function FamilyScreen() {
     // gestisce risposte “in ritardo” (race condition)
     const requestSeqRef = useRef(0);
 
+    // Update titolo / codice
     useEffect(() => {
         if (!familyId) return;
 
@@ -88,6 +89,37 @@ export function FamilyScreen() {
         }, 1000);
     }, [debouncedName, familyId, updateFamily, refreshMe]);
 
+    /* function carica() {
+        const asset = await pickFamilyImage();
+        if (!asset || !familyId) return;
+
+        setLocalPhotoUri(asset.uri); // preview immediata
+        setUploading(true);
+
+        try {
+            const updatedFamily = await uploadFamilyPhoto(familyId, asset);
+            await refreshMe(); // oppure aggiorna direttamente lo store user/family
+        } finally {
+            setUploading(false);
+        }
+    } */
+
+    // Updload immagine
+    async function pickFamilyImage(): Promise<ImagePicker.ImagePickerAsset | null> {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") return null;
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true, // crop
+            aspect: [1, 1], // avatar quadrato
+            quality: 0.85,
+        });
+
+        if (result.canceled) return null;
+        return result.assets[0] ?? null;
+    }
+
     return (
         <AppShell
             padded={false}
@@ -113,7 +145,7 @@ export function FamilyScreen() {
                             />
                             <IconButton
                                 icon="camera"
-                                onPress={() => {}}
+                                onPress={() => pickFamilyImage}
                             />
                             <IconButton
                                 icon="more-horizontal"

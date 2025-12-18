@@ -21,3 +21,7 @@ export interface UpdateFamilyResponse {
     success: "ok";
     family: Family;
 }
+export interface UploadFamilyPhotoResponse {
+    success: "ok";
+    family: Family;
+}
