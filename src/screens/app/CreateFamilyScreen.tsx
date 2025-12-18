@@ -77,11 +77,11 @@ export function CreateFamilyScreen({ navigation }: Props) {
                 value={name}
                 onChangeText={(v) => {
                     setName(v);
-                    clearFieldError("title");
+                    clearFieldError("name");
                     clearFormError();
                 }}
                 placeholder="assegna un nome alla tua famiglia"
-                error={fieldErrors.title}
+                error={fieldErrors.name}
             />
 
             <View className="flex-1" />

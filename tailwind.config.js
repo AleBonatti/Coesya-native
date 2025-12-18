@@ -25,6 +25,7 @@ module.exports = {
                     primary: "#A76D99", // pulsanti principali, link attivi
                     darker: "#5E134C",
                     accent: "#FFA500", // colore alternativo (es. pulsanti secondari)
+                    tertiary: "#F06000", // colore alternativo (es. pulsanti secondari)
                 },
             },
         },

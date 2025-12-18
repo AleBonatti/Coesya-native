@@ -1,14 +1,15 @@
 import React, { useEffect } from "react";
-import { View, Pressable } from "react-native";
-import { AppShell } from "../../components/layout/AppShell";
-import { AppText } from "../../components/ui/AppText";
-import { useAuthStore } from "../../auth/authStore";
-import { getCurrentFamily, hasAnyFamily } from "../../auth/authSelectors";
+import { View, Pressable, Image } from "react-native";
+import { AppShell } from "../../../components/layout/AppShell";
+import { AppText } from "../../../components/ui/AppText";
+import { useAuthStore } from "../../../auth/authStore";
+import { getCurrentFamily, hasAnyFamily } from "../../../auth/authSelectors";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { type MainStackParamList } from "../../navigation/MainStackParamList";
-import { LinkText } from "../../components/ui/LinkText";
+import { type MainStackParamList } from "../../../navigation/MainStackParamList";
+import { LinkText } from "../../../components/ui/LinkText";
 import { Feather } from "@expo/vector-icons";
+import { Avatar } from "../../../components/ui/Avatar";
 
 type Nav = NativeStackNavigationProp<MainStackParamList>;
 
@@ -17,6 +18,7 @@ export function FamilyHomeScreen() {
     const navigation = useNavigation<Nav>();
 
     const family = getCurrentFamily(user);
+    const fallback = require("../../../../assets/logo/logo-coesya-transparent.png");
 
     // Edge case: per qualche motivo siamo qui senza famiglie
     useEffect(() => {
@@ -31,6 +33,11 @@ export function FamilyHomeScreen() {
                 {family ? (
                     <>
                         <View className="w-full flex-row items-center justify-between">
+                            <Avatar
+                                uri={family.profile_photo_url}
+                                name={family.name}
+                                size={70}
+                            />
                             <AppText
                                 className="text-xl"
                                 weight="medium">
@@ -48,18 +55,18 @@ export function FamilyHomeScreen() {
                                         },
                                     });
                                 }}
-                                className="p-2 rounded-full active:bg-black/5"
+                                className="px-2 py-2 rounded-full bg-brand-primary"
                                 accessibilityRole="button"
                                 accessibilityLabel="Dettaglio famiglia">
                                 <Feather
-                                    name="chevron-right"
-                                    size={22}
-                                    color="#121212"
+                                    name="arrow-right"
+                                    size={15}
+                                    color="#FFFFFF"
                                 />
                             </Pressable>
                         </View>
 
-                        <View className="bg-auth-form rounded-lg p-5">
+                        <View className="bg-auth-form rounded-xl p-5 mt-10">
                             <AppText>La tua famiglia non ha ancora impegni da completare. Sii il primo a dare inizio a momenti di collaborazione!</AppText>
 
                             <LinkText

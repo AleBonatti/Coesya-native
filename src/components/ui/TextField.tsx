@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Platform, TextInput, TextInputProps } from "react-native";
+import { View, Text, Platform, TextInput, TextInputProps, ActivityIndicator } from "react-native";
 
 type TextFieldSize = "sm" | "md" | "lg";
 
@@ -7,10 +7,11 @@ interface TextFieldProps extends TextInputProps {
     label?: string;
     size?: TextFieldSize;
     error?: string;
+    isLoading?: boolean;
     className?: string;
 }
 
-export function TextField({ label, size = "md", error, className = "", ...props }: TextFieldProps) {
+export function TextField({ label, size = "md", error, className = "", isLoading = false, ...props }: TextFieldProps) {
     const [isFocused, setIsFocused] = useState(false);
 
     const sizeStyles: Record<TextFieldSize, string> = {
@@ -27,30 +28,41 @@ export function TextField({ label, size = "md", error, className = "", ...props 
               } as any)
             : undefined;
 
-    const borderColorClass = error ? "border-red-500" : isFocused ? "border-brand-primary" : "border-transparent";
+    //const borderColorClass = error ? "border-red-500" : isFocused ? "border-brand-primary" : "border-transparent";
 
     return (
         <View className="mb-4">
             {label && <Text className="font-sans text-base font-medium text-text-light mb-2">{label}</Text>}
-            <TextInput
-                {...props}
-                onFocus={(e) => {
-                    setIsFocused(true);
-                    props.onFocus?.(e);
-                }}
-                onBlur={(e) => {
-                    setIsFocused(false);
-                    props.onBlur?.(e);
-                }}
-                placeholderTextColor="#868686"
-                style={[webNoOutlineStyle, props.style]}
-                className={`
-                    font-sans rounded-xl text-text-main border bg-auth-bg
-                    ${error ? "border-red-500" : "border-transparent"}
-                    ${sizeStyles[size]}
-                    ${className}
-                `}
-            />
+
+            <View className="relative">
+                <TextInput
+                    {...props}
+                    onFocus={(e) => {
+                        setIsFocused(true);
+                        props.onFocus?.(e);
+                    }}
+                    onBlur={(e) => {
+                        setIsFocused(false);
+                        props.onBlur?.(e);
+                    }}
+                    placeholderTextColor="#868686"
+                    style={[webNoOutlineStyle, props.style]}
+                    className={`
+                        font-sans rounded-xl text-text-main border bg-auth-bg
+                        ${error ? "border-red-500" : "border-transparent"}
+                        ${sizeStyles[size]}
+                        ${isLoading ? "pr-12" : ""} 
+                        ${className}
+                    `}
+                />
+                {isLoading ? (
+                    <View
+                        pointerEvents="none"
+                        className="absolute right-4 top-0 bottom-0 justify-center">
+                        <ActivityIndicator size="small" />
+                    </View>
+                ) : null}
+            </View>
             {error && <Text className="font-sans text-xs text-red-500 mt-1">{error}</Text>}
         </View>
         /* ${isFocused && !error ? "bg-brand-primary/10" : "bg-auth-bg"} */

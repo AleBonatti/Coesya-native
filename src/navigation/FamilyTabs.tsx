@@ -6,8 +6,8 @@ import { Feather } from "@expo/vector-icons";
 import type { NavigatorScreenParams } from "@react-navigation/native";
 import type { FamilyStackParamList } from "./FamilyStack";
 
-import { FamilyHomeScreen } from "../screens/app/FamilyHomeScreen";
 import { FamilyStack } from "./FamilyStack";
+import { FamilyHomeScreen } from "../screens/app/tabs/FamilyHomeScreen";
 import { ChoresScreen } from "../screens/app/tabs/ChoresScreen";
 import { GoalsScreen } from "../screens/app/tabs/GoalsScreen";
 

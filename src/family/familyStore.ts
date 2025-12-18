@@ -1,21 +1,26 @@
 import { create } from "zustand";
 import { api, ApiError } from "../lib/api";
-import type { CreateFamilyRequest, CreateFamilyResponse, Family } from "./familyTypes";
+import type { CreateFamilyRequest, CreateFamilyResponse, Family, UpdateFamilyRequest, UpdateFamilyResponse } from "./familyTypes";
 
-type FamilyFieldErrorMap = Partial<Record<"title", string>>;
+type FamilyFieldErrorMap = Partial<Record<"name", string>>;
 
 interface FamilyState {
     isCreating: boolean;
+    isUpdating: boolean;
+
     formError: string | null;
     fieldErrors: FamilyFieldErrorMap;
 
     createFamily: (data: CreateFamilyRequest) => Promise<Family>;
+    updateFamily: (familyId: number, data: UpdateFamilyRequest) => Promise<Family>;
+
     clearFieldError: (field: keyof FamilyFieldErrorMap) => void;
     clearFormError: () => void;
 }
 
 export const useFamilyStore = create<FamilyState>((set) => ({
     isCreating: false,
+    isUpdating: false,
     formError: null,
     fieldErrors: {},
 
@@ -56,7 +61,7 @@ export const useFamilyStore = create<FamilyState>((set) => ({
                     isCreating: false,
                     formError: null,
                     fieldErrors: {
-                        title: e.validationErrors.name?.[0],
+                        name: e.validationErrors.name?.[0],
                     },
                 });
                 throw e; // opzionale, puoi anche non rilanciare
@@ -73,6 +78,55 @@ export const useFamilyStore = create<FamilyState>((set) => ({
 
             set({
                 isCreating: false,
+                formError: "Si è verificato un errore. Riprova tra poco.",
+                fieldErrors: {},
+            });
+            throw e;
+        }
+    },
+
+    updateFamily: async (familyId, data) => {
+        set({ isUpdating: true, formError: null, fieldErrors: {} });
+
+        const minDelayMs = 350;
+        const startedAt = Date.now();
+
+        try {
+            const res = await api.patch<UpdateFamilyResponse>(`/family/${familyId}`, data);
+
+            const elapsed = Date.now() - startedAt;
+            if (elapsed < minDelayMs) {
+                await new Promise<void>((r) => setTimeout(r, minDelayMs - elapsed));
+            }
+
+            set({ isUpdating: false, formError: null, fieldErrors: {} });
+            return res.family; // ✅ ritorna Family
+        } catch (e) {
+            const elapsed = Date.now() - startedAt;
+            if (elapsed < minDelayMs) {
+                await new Promise<void>((r) => setTimeout(r, minDelayMs - elapsed));
+            }
+
+            if (e instanceof ApiError && e.status === 422 && e.validationErrors) {
+                set({
+                    isUpdating: false,
+                    formError: null,
+                    fieldErrors: { name: e.validationErrors.name?.[0] },
+                });
+                throw e;
+            }
+
+            if (e instanceof ApiError && (e.status === 401 || e.status === 403)) {
+                set({
+                    isUpdating: false,
+                    formError: "Non hai i permessi per modificare questa famiglia.",
+                    fieldErrors: {},
+                });
+                throw e;
+            }
+
+            set({
+                isUpdating: false,
                 formError: "Si è verificato un errore. Riprova tra poco.",
                 fieldErrors: {},
             });
