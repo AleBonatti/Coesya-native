@@ -142,13 +142,8 @@ export function ChoresScreen() {
                             );
                         }}
                         ListEmptyComponent={
-                            <View className="mt-10 rounded-2xl bg-white/10 px-5 py-6">
-                                <AppText
-                                    weight="semibold"
-                                    className="text-lg">
-                                    Nessun impegno attivo
-                                </AppText>
-                                <AppText className="text-white/80 mt-2">Crea un nuovo impegno dalla sezione di gestione.</AppText>
+                            <View className="mt-10 rounded-2xl bg-auth-form px-5 py-6">
+                                <AppText>La tua famiglia non ha ancora uno storico di impegni completati.</AppText>
                             </View>
                         }
                     />
