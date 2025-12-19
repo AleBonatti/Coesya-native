@@ -5,6 +5,7 @@ import { Feather } from "@expo/vector-icons";
 
 import type { NavigatorScreenParams } from "@react-navigation/native";
 import type { FamilyStackParamList } from "./FamilyStack";
+import type { ChoresStackParamList } from "./ChoresStack";
 
 import { FamilyStack } from "./FamilyStack";
 import { FamilyHomeScreen } from "../screens/app/tabs/FamilyHomeScreen";
@@ -13,8 +14,8 @@ import { GoalsScreen } from "../screens/app/tabs/GoalsScreen";
 
 export type FamilyTabsParamList = {
     Home: undefined;
-    Family: NavigatorScreenParams<FamilyStackParamList>;
-    Chores: undefined;
+    Family: NavigatorScreenParams<FamilyStackParamList> | undefined;
+    Chores: NavigatorScreenParams<ChoresStackParamList> | undefined;
     Goals: undefined;
 };
 
