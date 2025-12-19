@@ -2,10 +2,11 @@ import React, { useEffect, useMemo } from "react";
 import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
+import type { ActiveChore } from "../../../chores/choreTypes";
+import { useChoresStore } from "../../../chores/choreStore";
 import { AppShell } from "../../../components/layout/AppShell";
 import { AppText } from "../../../components/ui/AppText";
-import { useChoresStore } from "../../../chores/choreStore";
-import type { ActiveChore } from "../../../chores/choreTypes";
+import { Button } from "../../../components/ui/Button";
 
 function formatDue(dueIso: string): string {
     const d = new Date(dueIso);
@@ -47,7 +48,7 @@ export function ChoresScreen() {
         <AppShell>
             <View className="pt-4">
                 <View className="flex-row items-end justify-between mb-4">
-                    <View>
+                    {/* <View>
                         <AppText
                             className="text-2xl"
                             weight="semibold">
@@ -64,7 +65,7 @@ export function ChoresScreen() {
                         accessibilityRole="button"
                         accessibilityLabel="Aggiorna lista">
                         <AppText weight="semibold">Aggiorna</AppText>
-                    </Pressable>
+                    </Pressable> */}
                 </View>
 
                 {error ? (
@@ -142,9 +143,17 @@ export function ChoresScreen() {
                             );
                         }}
                         ListEmptyComponent={
-                            <View className="mt-10 rounded-2xl bg-auth-form px-5 py-6">
-                                <AppText>La tua famiglia non ha ancora uno storico di impegni completati.</AppText>
-                            </View>
+                            <>
+                                <View className="bg-auth-form rounded-xl p-5 mb-6">
+                                    <AppText>La tua famiglia non ha ancora uno storico di impegni completati.</AppText>
+                                </View>
+                                <Button
+                                    variant="tertiary"
+                                    size="sm"
+                                    title="Gestione inviti"
+                                    onPress={() => {}}
+                                />
+                            </>
                         }
                     />
                 )}
