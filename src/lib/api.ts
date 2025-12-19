@@ -66,8 +66,49 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     return (await res.json()) as T;
 }
 
+async function requestForm<T>(path: string, form: FormData, init?: Omit<RequestInit, "body">): Promise<T> {
+    const token = await getToken();
+
+    const res = await fetch(`${API_BASE_URL}${path}`, {
+        method: "POST",
+        ...init,
+        body: form,
+        headers: {
+            Accept: "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...(init?.headers ?? {}),
+            // 🚫 niente Content-Type qui
+        },
+    });
+
+    if (!res.ok) {
+        const contentType = res.headers.get("content-type") ?? "";
+        if (contentType.includes("application/json")) {
+            const data: unknown = await res.json().catch(() => null);
+
+            if (res.status === 422 && isValidationErrorPayload(data)) {
+                const message = typeof data?.message === "string" ? data.message : "Validation error";
+                const errors = (data as { errors?: ValidationErrors }).errors;
+                throw new ApiError(message, 422, errors);
+            }
+
+            const message = data && typeof data === "object" && "message" in (data as Record<string, unknown>) && typeof (data as Record<string, unknown>).message === "string" ? ((data as Record<string, unknown>).message as string) : res.statusText;
+
+            throw new ApiError(message, res.status);
+        }
+
+        const text = await res.text().catch(() => "");
+        throw new ApiError(text || res.statusText, res.status);
+    }
+
+    return (await res.json()) as T;
+}
+
 export const api = {
+    get: <T>(path: string) => request<T>(path),
     post: <T>(path: string, body: unknown) => request<T>(path, { method: "POST", body: JSON.stringify(body) }),
     patch: <T>(path: string, body: unknown) => request<T>(path, { method: "PATCH", body: JSON.stringify(body) }),
-    get: <T>(path: string) => request<T>(path),
+    // ✅ multipart/form-data
+    postForm: <T>(path: string, form: FormData) => requestForm<T>(path, form),
 };

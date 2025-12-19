@@ -27,6 +27,9 @@ export function FamilyScreen() {
 
     const [showNameSpinner, setShowNameSpinner] = useState(false);
 
+    const uploadFamilyPhoto = useFamilyStore((s) => s.uploadFamilyPhoto);
+    const isUploadingPhoto = useFamilyStore((s) => s.isUploadingPhoto);
+
     // sync quando cambia family (es. refreshMe)
     useEffect(() => {
         if (!family) return;
@@ -89,36 +92,34 @@ export function FamilyScreen() {
         }, 1000);
     }, [debouncedName, familyId, updateFamily, refreshMe]);
 
-    /* function carica() {
-        const asset = await pickFamilyImage();
-        if (!asset || !familyId) return;
+    const handlePickPhoto = async () => {
+        if (!familyId) return;
 
-        setLocalPhotoUri(asset.uri); // preview immediata
-        setUploading(true);
-
-        try {
-            const updatedFamily = await uploadFamilyPhoto(familyId, asset);
-            await refreshMe(); // oppure aggiorna direttamente lo store user/family
-        } finally {
-            setUploading(false);
-        }
-    } */
-
-    // Updload immagine
-    async function pickFamilyImage(): Promise<ImagePicker.ImagePickerAsset | null> {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== "granted") return null;
+        const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!perm.granted) return;
 
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true, // crop
-            aspect: [1, 1], // avatar quadrato
+            allowsEditing: true,
+            aspect: [1, 1],
             quality: 0.85,
         });
 
-        if (result.canceled) return null;
-        return result.assets[0] ?? null;
-    }
+        if (result.canceled) return;
+
+        const asset = result.assets[0];
+        if (!asset) return;
+
+        try {
+            await uploadFamilyPhoto(familyId, asset);
+
+            // riallinea user/family nel tuo authStore (così profile_photo_url si aggiorna)
+            await refreshMe();
+        } catch {
+            alert("error!");
+            // errore già nello store (formError)
+        }
+    };
 
     return (
         <AppShell
@@ -145,7 +146,8 @@ export function FamilyScreen() {
                             />
                             <IconButton
                                 icon="camera"
-                                onPress={() => pickFamilyImage}
+                                onPress={() => handlePickPhoto()}
+                                isLoading={isUploadingPhoto}
                             />
                             <IconButton
                                 icon="more-horizontal"
