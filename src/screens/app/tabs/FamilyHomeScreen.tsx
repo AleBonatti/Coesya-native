@@ -38,6 +38,7 @@ export function FamilyHomeScreen() {
                                 name={family.name}
                                 size={70}
                             />
+
                             <AppText
                                 className="text-xl"
                                 weight="medium">
@@ -49,10 +50,6 @@ export function FamilyHomeScreen() {
                                     if (!family) return;
                                     navigation.navigate("FamilyTabs", {
                                         screen: "Family",
-                                        params: {
-                                            screen: "FamilyDetail",
-                                            params: { familyId: family.id },
-                                        },
                                     });
                                 }}
                                 className="px-2 py-2 rounded-full bg-brand-primary"
