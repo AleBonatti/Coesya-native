@@ -6,18 +6,7 @@ import { DashboardScreen } from "../screens/app/DashboardScreen";
 import { CreateFamilyScreen } from "../screens/app/CreateFamilyScreen";
 import { JoinFamilyScreen } from "../screens/app/JoinFamilyScreen";
 
-/* export type FamilyOnboardingStackParamList = {
-    Dashboard: undefined;
-    CreateFamily: undefined;
-    JoinFamily: undefined;
-}; */
-
 const Stack = createNativeStackNavigator<MainStackParamList>();
-
-/* const TransparentTheme = {
-    ...DefaultTheme,
-    colors: { ...DefaultTheme.colors, background: "transparent" },
-}; */
 
 export function FamilyOnboardingStack() {
     return (

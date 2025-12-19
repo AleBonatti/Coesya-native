@@ -35,17 +35,7 @@ export function AppGate({ fontsLoaded }: { fontsLoaded: boolean }) {
     return (
         <>
             <StatusBar style="light" />
-            {/* {hasAnyFamily(user) ? (
-                <RootNavigator />
-            ) : ( */}
-            <LinearGradient
-                colors={["#A76D99", "#5E134C"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                style={{ flex: 1 }}>
-                <RootNavigator hasFamily={hasAnyFamily(user)} />
-            </LinearGradient>
-            {/* )} */}
+            <RootNavigator hasFamily={hasAnyFamily(user)} />
         </>
     );
 }
