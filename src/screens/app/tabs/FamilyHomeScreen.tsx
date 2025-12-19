@@ -7,7 +7,7 @@ import { getCurrentFamily, hasAnyFamily } from "../../../auth/authSelectors";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { type MainStackParamList } from "../../../navigation/MainStackParamList";
-import { Button } from "../../../components/ui/Button";
+import { LinkText } from "../../../components/ui/LinkText";
 import { Feather } from "@expo/vector-icons";
 import { Avatar } from "../../../components/ui/Avatar";
 
@@ -33,7 +33,7 @@ export function FamilyHomeScreen() {
                 {family ? (
                     <>
                         <View className="w-full flex-row items-center justify-between">
-                            {/* <Avatar
+                            <Avatar
                                 uri={family.profile_photo_url}
                                 name={family.name}
                                 size={70}
@@ -60,18 +60,18 @@ export function FamilyHomeScreen() {
                                     size={15}
                                     color="#FFFFFF"
                                 />
-                            </Pressable> */}
+                            </Pressable>
                         </View>
 
-                        <View className="bg-auth-form rounded-xl p-5 my-10">
-                            <AppText>La tua famiglia non ha ancora uno storico di impegni completati.</AppText>
+                        <View className="bg-auth-form rounded-xl p-5 mt-10">
+                            <AppText>La tua famiglia non ha ancora impegni da completare. Sii il primo a dare inizio a momenti di collaborazione!</AppText>
+
+                            <LinkText
+                                onPress={() => {}}
+                                className="mt-10">
+                                Clicca qui per creare il tuo primo impegno familiare.
+                            </LinkText>
                         </View>
-                        <Button
-                            variant="tertiary"
-                            size="sm"
-                            title="Gestione inviti"
-                            onPress={() => {}}
-                        />
                     </>
                 ) : (
                     <AppText>Nessuna famiglia attiva trovata.</AppText>
