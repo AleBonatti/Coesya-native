@@ -8,8 +8,8 @@ import type { FamilyStackParamList } from "./FamilyStack";
 import type { ChoresStackParamList } from "./ChoresStack";
 
 import { FamilyStack } from "./FamilyStack";
+import { ChoresStack } from "./ChoresStack";
 import { FamilyHomeScreen } from "../screens/app/tabs/FamilyHomeScreen";
-import { ChoresScreen } from "../screens/app/tabs/ChoresScreen";
 import { GoalsScreen } from "../screens/app/tabs/GoalsScreen";
 
 export type FamilyTabsParamList = {
@@ -27,7 +27,7 @@ export function FamilyTabs() {
             screenOptions={{
                 headerShown: false,
                 tabBarShowLabel: false,
-                sceneStyle: { backgroundColor: "#FFFFFF" },
+                sceneStyle: { backgroundColor: "#F7F7F7" },
 
                 tabBarStyle: {
                     position: "absolute",
@@ -83,7 +83,7 @@ export function FamilyTabs() {
 
             <Tab.Screen
                 name="Chores"
-                component={ChoresScreen}
+                component={ChoresStack}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon

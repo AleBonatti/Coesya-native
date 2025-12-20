@@ -1,12 +1,18 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 
 import type { ActiveChore } from "../../../chores/choreTypes";
+import { ChoresStackParamList } from "../../../navigation/ChoresStack";
 import { useChoresStore } from "../../../chores/choreStore";
 import { AppShell } from "../../../components/layout/AppShell";
 import { AppText } from "../../../components/ui/AppText";
 import { Button } from "../../../components/ui/Button";
+import { IconButton } from "../../../components/ui/IconButton";
+
+type Nav = NativeStackNavigationProp<ChoresStackParamList>;
 
 function formatDue(dueIso: string): string {
     const d = new Date(dueIso);
@@ -28,6 +34,7 @@ function frequencyLabel(freq: ActiveChore["frequency"]): string {
 }
 
 export function ChoresScreen() {
+    const navigation = useNavigation<Nav>();
     const chores = useChoresStore((s) => s.chores);
     const isLoading = useChoresStore((s) => s.isLoading);
     const error = useChoresStore((s) => s.error);
@@ -41,31 +48,35 @@ export function ChoresScreen() {
         void fetchActive();
     }, [fetchActive]);
 
-    const activeCount = chores.length;
-    const doneCount = useMemo(() => chores.filter((c) => c.is_completed).length, [chores]);
+    //const activeCount = chores.length;
+    //const doneCount = useMemo(() => chores.filter((c) => c.is_completed).length, [chores]);
 
     return (
-        <AppShell>
+        <AppShell showHeader={false}>
             <View className="pt-4">
                 <View className="flex-row items-end justify-between mb-4">
-                    {/* <View>
-                        <AppText
-                            className="text-2xl"
-                            weight="semibold">
-                            Impegni
-                        </AppText>
-                        <AppText className="text-white/80 mt-1">
-                            {doneCount}/{activeCount} completati nel periodo corrente
-                        </AppText>
+                    <IconButton
+                        icon="filter"
+                        onPress={() => {}}
+                    />
+                    <View className="flex-row gap-1">
+                        <IconButton
+                            icon="search"
+                            onPress={() => {}}
+                        />
+                        <IconButton
+                            icon="calendar"
+                            onPress={() => {}}
+                        />
+                        <IconButton
+                            icon="list"
+                            onPress={() => void fetchActive()}
+                        />
+                        <IconButton
+                            icon="refresh-ccw"
+                            onPress={() => {}}
+                        />
                     </View>
-
-                    <Pressable
-                        onPress={() => void fetchActive()}
-                        className="px-3 py-2 rounded-xl bg-white/15 active:bg-white/25"
-                        accessibilityRole="button"
-                        accessibilityLabel="Aggiorna lista">
-                        <AppText weight="semibold">Aggiorna</AppText>
-                    </Pressable> */}
                 </View>
 
                 {error ? (
@@ -144,14 +155,14 @@ export function ChoresScreen() {
                         }}
                         ListEmptyComponent={
                             <>
-                                <View className="bg-auth-form rounded-xl p-5 mb-6">
-                                    <AppText>La tua famiglia non ha ancora uno storico di impegni completati.</AppText>
+                                <View className="bg-auth-form rounded-xl p-5 mb-6 mt-10">
+                                    <AppText>La tua famiglia non ha ancora impegni da completare.</AppText>
                                 </View>
                                 <Button
                                     variant="tertiary"
                                     size="sm"
-                                    title="Gestione inviti"
-                                    onPress={() => {}}
+                                    title="Gestione impegni"
+                                    onPress={() => navigation.navigate("ChoresList")}
                                 />
                             </>
                         }

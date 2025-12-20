@@ -52,3 +52,18 @@ export interface CompleteResponse {
     } | null;
     period_key?: string;
 }
+
+export interface Chore {
+    id: number;
+    title: string;
+    frequency: ChoreFrequency;
+    category: string;
+    is_active: boolean;
+    weight: number;
+    priority: number;
+}
+
+export interface ChoresIndexResponse {
+    success: "ok";
+    chores: Chore[];
+}

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { api, ApiError } from "../lib/api";
-import type { ActiveChore, ActiveChoresResponse, CompleteResponse } from "./choreTypes";
+import type { ActiveChore, ActiveChoresResponse, CompleteResponse, Chore, ChoresIndexResponse } from "./choreTypes";
 
 interface ChoresState {
     chores: ActiveChore[];
@@ -13,6 +13,10 @@ interface ChoresState {
     fetchActive: () => Promise<void>;
     toggleComplete: (choreId: number) => Promise<void>;
     clearError: () => void;
+
+    allChores: Chore[];
+    isLoadingAll: boolean;
+    fetchAll: () => Promise<void>;
 }
 
 export const useChoresStore = create<ChoresState>((set, get) => ({
@@ -22,6 +26,9 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
     togglingIds: {},
 
     clearError: () => set({ error: null }),
+
+    allChores: [],
+    isLoadingAll: false,
 
     fetchActive: async () => {
         set({ isLoading: true, error: null });
@@ -100,6 +107,17 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
                 const { [choreId]: _removed, ...rest } = s.togglingIds;
                 return { togglingIds: rest };
             });
+        }
+    },
+
+    fetchAll: async () => {
+        set({ isLoadingAll: true, error: null });
+        try {
+            const res = await api.get<ChoresIndexResponse>("/chores");
+            set({ allChores: res.chores, isLoadingAll: false });
+        } catch (e) {
+            const msg = e instanceof ApiError ? e.message : "Errore nel caricamento degli impegni.";
+            set({ isLoadingAll: false, error: msg });
         }
     },
 }));

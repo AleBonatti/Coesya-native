@@ -84,7 +84,7 @@ export function AuthScreen() {
             {renderSocialButtons()}
 
             <AppText
-                variant="dark"
+                variant="primary"
                 className="text-center my-8">
                 oppure procedi tramite email
             </AppText>

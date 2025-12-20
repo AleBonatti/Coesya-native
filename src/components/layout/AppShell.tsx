@@ -10,7 +10,7 @@ interface AppShellProps {
     padded?: boolean;
 }
 
-export function AppShell({ children, backgroundClassName = "bg-white", showHeader = true, padded = true }: AppShellProps) {
+export function AppShell({ children, backgroundClassName = "bg-transparent", showHeader = true, padded = true }: AppShellProps) {
     return (
         <Screen backgroundClassName={backgroundClassName}>
             <View className="flex-1">
