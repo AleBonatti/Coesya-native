@@ -1,31 +1,11 @@
-/* export interface Chore {
-    id: number;
-    name: string;
-}
-
-export interface CreateChoreRequest {
-    name: string;
-}
-
-export interface CreateChoreResponse {
-    success: "ok";
-    chore: Chore;
-}
-export interface UpdateChoreRequest {
-    name: string;
-}
-export interface UpdateChoreResponse {
-    success: "ok";
-    chore: Chore;
-}
- */
+import { Category } from "../categories/categoryTypes";
 export type ChoreFrequency = "daily" | "weekly" | "monthly" | "semiannual";
 
 export interface ActiveChore {
     id: number;
     title: string;
     frequency: ChoreFrequency;
-    category: string;
+    category_id: number;
     weight: number; // 1..5
     priority: number; // 1..5
     is_active: boolean;
@@ -35,6 +15,8 @@ export interface ActiveChore {
     is_completed: boolean;
     completed_at?: string | null;
     completed_by_user_id?: number | null;
+
+    category: Category;
 }
 
 export interface ActiveChoresResponse {
@@ -51,4 +33,36 @@ export interface CompleteResponse {
         completed_by_user_id?: number | null;
     } | null;
     period_key?: string;
+}
+
+export interface Chore {
+    id: number;
+    title: string;
+    frequency: ChoreFrequency;
+    category_id: number;
+    is_active: boolean;
+    weight: number;
+    priority: number;
+    category: Category;
+}
+
+export interface ChoresIndexResponse {
+    success: "ok";
+    chores: Chore[];
+}
+export interface CreateChoreRequest {
+    title: string;
+    frequency: ChoreFrequency;
+    category_id: number;
+    weight: number;
+    priority: number;
+    is_active: boolean;
+
+    // non necessariamente salvato nel chore: è un “comportamento”
+    completed_current_period: boolean;
+}
+
+export interface CreateChoreResponse {
+    success: "ok";
+    chore: Chore;
 }

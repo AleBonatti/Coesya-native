@@ -1,17 +1,24 @@
 import React, { useState } from "react";
 import { View, Text, Platform, TextInput, TextInputProps, ActivityIndicator } from "react-native";
 
+export type InputVariant = "primary" | "dark";
 type TextFieldSize = "sm" | "md" | "lg";
 
 interface TextFieldProps extends TextInputProps {
     label?: string;
     size?: TextFieldSize;
+    variant?: InputVariant;
     error?: string;
     isLoading?: boolean;
     className?: string;
 }
 
-export function TextField({ label, size = "md", error, className = "", isLoading = false, ...props }: TextFieldProps) {
+const variantClasses: Record<InputVariant, string> = {
+    primary: "bg-auth-bg",
+    dark: "bg-auth-form",
+};
+
+export function TextField({ label, size = "md", variant = "primary", error, className = "", isLoading = false, ...props }: TextFieldProps) {
     const [isFocused, setIsFocused] = useState(false);
 
     const sizeStyles: Record<TextFieldSize, string> = {
@@ -48,7 +55,8 @@ export function TextField({ label, size = "md", error, className = "", isLoading
                     placeholderTextColor="#868686"
                     style={[webNoOutlineStyle, props.style]}
                     className={`
-                        font-sans rounded-xl text-text-main border bg-auth-bg
+                        ${variantClasses[variant]}
+                        font-sans rounded-xl text-text-main border
                         ${error ? "border-red-500" : "border-transparent"}
                         ${sizeStyles[size]}
                         ${isLoading ? "pr-12" : ""} 
