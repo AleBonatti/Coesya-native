@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { api, ApiError } from "../lib/api";
 import type { ActiveChore, ActiveChoresResponse, CompleteResponse, Chore, ChoresIndexResponse, CreateChoreRequest, CreateChoreResponse } from "./choreTypes";
 
-type FieldErrors = Partial<Record<"title" | "frequency" | "category" | "weight" | "priority", string>>;
+type FieldErrors = Partial<Record<"title" | "frequency" | "category_id" | "weight" | "priority", string>>;
 interface ChoresState {
     chores: ActiveChore[];
     isLoading: boolean;
@@ -154,7 +154,7 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
             const res = await api.post<CreateChoreResponse>("/chores", {
                 title: data.title,
                 frequency: data.frequency,
-                category: data.category,
+                category_id: data.category_id,
                 weight: data.weight,
                 priority: data.priority,
                 is_active: data.is_active,
@@ -181,7 +181,7 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
                     createFieldErrors: {
                         title: e.validationErrors.title?.[0],
                         frequency: e.validationErrors.frequency?.[0],
-                        category: e.validationErrors.category?.[0],
+                        category_id: e.validationErrors.category_id?.[0],
                         weight: e.validationErrors.weight?.[0],
                         priority: e.validationErrors.priority?.[0],
                     },

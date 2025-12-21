@@ -100,6 +100,14 @@ export function ChoresScreen() {
                         keyExtractor={(item) => String(item.id)}
                         contentContainerStyle={{ paddingBottom: 110 }}
                         ItemSeparatorComponent={() => <View className="h-3" />}
+                        ListFooterComponent={
+                            <Button
+                                variant="tertiary"
+                                size="sm"
+                                title="Gestione impegni"
+                                onPress={() => navigation.navigate("ChoresList")}
+                            />
+                        }
                         renderItem={({ item }) => {
                             const isToggling = Boolean(togglingIds[item.id]);
 
@@ -158,12 +166,6 @@ export function ChoresScreen() {
                                 <View className="bg-auth-form rounded-xl p-5 mb-6 mt-10">
                                     <AppText>La tua famiglia non ha ancora impegni da completare.</AppText>
                                 </View>
-                                <Button
-                                    variant="tertiary"
-                                    size="sm"
-                                    title="Gestione impegni"
-                                    onPress={() => navigation.navigate("ChoresList")}
-                                />
                             </View>
                         }
                     />

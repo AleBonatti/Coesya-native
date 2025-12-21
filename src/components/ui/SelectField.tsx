@@ -3,12 +3,12 @@ import { Modal, Pressable, View, FlatList } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { AppText } from "./AppText";
 
-export type SelectOption<T extends string> = {
+export type SelectOption<T extends string | number> = {
     value: T;
     label: string;
 };
 
-type SelectFieldProps<T extends string> = {
+type SelectFieldProps<T extends string | number> = {
     label: string;
     value: T;
     options: ReadonlyArray<SelectOption<T>>;
@@ -84,7 +84,7 @@ export function SelectField<T extends string>({ label, value, options, onChange,
 
                     <FlatList
                         data={options}
-                        keyExtractor={(item) => item.value}
+                        keyExtractor={(item) => String(item.value)}
                         renderItem={({ item }) => {
                             const isSelected = item.value === value;
                             return (

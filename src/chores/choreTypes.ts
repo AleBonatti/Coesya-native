@@ -4,7 +4,7 @@ export interface ActiveChore {
     id: number;
     title: string;
     frequency: ChoreFrequency;
-    category: string;
+    category_id: number;
     weight: number; // 1..5
     priority: number; // 1..5
     is_active: boolean;
@@ -36,7 +36,7 @@ export interface Chore {
     id: number;
     title: string;
     frequency: ChoreFrequency;
-    category: string;
+    category_id: number;
     is_active: boolean;
     weight: number;
     priority: number;
@@ -49,7 +49,7 @@ export interface ChoresIndexResponse {
 export interface CreateChoreRequest {
     title: string;
     frequency: ChoreFrequency;
-    category: string;
+    category_id: number;
     weight: number;
     priority: number;
     is_active: boolean;

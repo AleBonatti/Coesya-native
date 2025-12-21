@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Pressable, View, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
+import { useCategoryStore } from "../../categories/categoryStore";
 import { AppShell } from "../../components/layout/AppShell";
 import { AppText } from "../../components/ui/AppText";
 import { TextField } from "../../components/ui/TextField";
@@ -17,28 +18,11 @@ import type { ChoreFrequency } from "../../chores/choreTypes";
 
 type Nav = NativeStackNavigationProp<ChoresStackParamList>;
 
-const frequencies: Array<{ value: ChoreFrequency; label: string }> = [
-    { value: "daily", label: "Giornaliera" },
-    { value: "weekly", label: "Settimanale" },
-    { value: "monthly", label: "Mensile" },
-    { value: "semiannual", label: "Semestrale" },
-];
-
 const frequencyOptions: ReadonlyArray<SelectOption<ChoreFrequency>> = [
     { value: "daily", label: "Giornaliera" },
     { value: "weekly", label: "Settimanale" },
     { value: "monthly", label: "Mensile" },
     { value: "semiannual", label: "Semestrale" },
-];
-
-// per ora categorie stringa libera; se vuoi la renderemo select con icone
-type ChoreCategory = "Pulizia" | "Burocrazia" | "Spesa" | "Altro";
-
-const categoryOptions: ReadonlyArray<SelectOption<ChoreCategory>> = [
-    { value: "Pulizia", label: "Pulizia" },
-    { value: "Burocrazia", label: "Burocrazia" },
-    { value: "Spesa", label: "Spesa" },
-    { value: "Altro", label: "Altro" },
 ];
 
 export function ChoreCreateScreen() {
@@ -55,14 +39,35 @@ export function ChoreCreateScreen() {
 
     const [title, setTitle] = useState<string>("");
     const [frequency, setFrequency] = useState<ChoreFrequency>("weekly");
-    const [category, setCategory] = useState<ChoreCategory[number]>("Pulizia");
+
+    const fetchCategories = useCategoryStore((s) => s.fetchCategories);
+    const categories = useCategoryStore((s) => s.categories);
+    const catLoading = useCategoryStore((s) => s.isLoading);
+
+    const activeCategories = useMemo(() => categories.filter((c) => c.active === 1), [categories]);
+
+    const categoryOptions = useMemo(() => activeCategories.map((c) => ({ value: c.id, label: c.title })), [activeCategories]);
+
+    const [categoryId, setCategoryId] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (categories.length === 0) void fetchCategories();
+    }, [fetchCategories, categories.length]);
+
+    // quando arrivano categorie, set default se manca
+    useEffect(() => {
+        if (categoryId !== null) return;
+        if (categoryOptions.length > 0) setCategoryId(categoryOptions[0].value);
+    }, [categoryId, categoryOptions]);
 
     const [weight, setWeight] = useState<number>(3);
     const [priority, setPriority] = useState<number>(3);
     const [isActive, setIsActive] = useState<boolean>(true);
     const [alreadyDone, setAlreadyDone] = useState<boolean>(false);
 
-    const canSubmit = useMemo(() => title.trim().length > 0 && !isCreating, [title, isCreating]);
+    const canSubmit = useMemo(() => {
+        return title.trim().length > 0 && categoryId !== null && !isCreating;
+    }, [title, categoryId, isCreating]);
 
     const handleSave = async () => {
         if (!canSubmit) return;
@@ -71,7 +76,7 @@ export function ChoreCreateScreen() {
             await createChore({
                 title: title.trim(),
                 frequency,
-                category,
+                category_id: categoryId!,
                 weight,
                 priority,
                 is_active: isActive,
@@ -97,17 +102,15 @@ export function ChoreCreateScreen() {
                     contentContainerStyle={{ flexGrow: 1, paddingBottom: 140 }}
                     keyboardShouldPersistTaps="handled">
                     <View className="flex-row items-center justify-between pt-2 mb-4">
-                        <Pressable
-                            onPress={() => navigation.goBack()}
-                            className="flex-row items-center gap-2 py-2">
+                        <Pressable className="flex-row items-center gap-2 py-2">
                             <Feather
                                 name="chevron-left"
                                 size={22}
                             />
                             <LinkText
+                                onPress={() => navigation.goBack()}
                                 variant="dark"
                                 weight="medium"
-                                onPress={() => navigation.goBack()}
                                 className="text-xl font-medium">
                                 Elenco impegni
                             </LinkText>
@@ -143,7 +146,6 @@ export function ChoreCreateScreen() {
                             }}
                             error={fieldErrors.title}
                         />
-
                         {/* Frequenza: per ora “segmented” semplice */}
                         <SelectField
                             label="Frequenza"
@@ -155,18 +157,13 @@ export function ChoreCreateScreen() {
                             }}
                             error={fieldErrors.frequency}
                         />
-
                         <SelectField
                             label="Categoria"
-                            value={category}
+                            value={categoryId ?? categoryOptions[0]?.value ?? 0}
                             options={categoryOptions}
-                            onChange={(v) => {
-                                if (fieldErrors.category) clearFieldError("category");
-                                setCategory(v);
-                            }}
-                            error={fieldErrors.category}
+                            onChange={(v) => setCategoryId(v)}
+                            placeholder={catLoading ? "Caricamento…" : "Seleziona…"}
                         />
-
                         {/* Weight/Priority (stepper semplice) */}
                         <View className="flex-row gap-3">
                             <Stepper
@@ -186,20 +183,17 @@ export function ChoreCreateScreen() {
                                 }}
                             />
                         </View>
-
                         {/* Toggles */}
                         <Checkbox
                             checked={isActive}
                             onChange={setIsActive}
                             label="Impegno attivo"
                         />
-
                         <Checkbox
                             checked={alreadyDone}
                             onChange={setAlreadyDone}
                             label="Ho già svolto questa attività nel periodo corrente"
                         />
-
                         <View className="mt-2">
                             <Button
                                 title="Crea impegno"
@@ -236,7 +230,7 @@ function Stepper(props: { label: string; value: number; onChange: (value: number
                     <Feather
                         name="minus"
                         size={18}
-                        color="#FFFFFF"
+                        color="#121212"
                     />
                 </Pressable>
 
@@ -252,7 +246,7 @@ function Stepper(props: { label: string; value: number; onChange: (value: number
                     <Feather
                         name="plus"
                         size={18}
-                        color="#FFFFFF"
+                        color="#121212"
                     />
                 </Pressable>
             </View>

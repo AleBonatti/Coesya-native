@@ -83,7 +83,7 @@ export function ChoresListScreen() {
                                     <View className="flex-row items-center gap-3 flex-1 pr-3">
                                         <View className="w-10 h-10 rounded-xl bg-white/10 items-center justify-center">
                                             <Feather
-                                                name={categoryIcon(item.category)}
+                                                name={categoryIcon(item.title)}
                                                 size={18}
                                                 color="#FFFFFF"
                                             />
@@ -96,7 +96,7 @@ export function ChoresListScreen() {
                                                 {item.title}
                                             </AppText>
                                             <AppText className="text-white/70 mt-1">
-                                                {item.category} · {freqLabel(item.frequency)}
+                                                {item.category_id} · {freqLabel(item.frequency)}
                                             </AppText>
                                         </View>
                                     </View>
