@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 
-import type { NavigatorScreenParams } from "@react-navigation/native";
+import { StackActions, type NavigatorScreenParams } from "@react-navigation/native";
 import type { FamilyStackParamList } from "./FamilyStack";
 import type { ChoresStackParamList } from "./ChoresStack";
 
@@ -71,6 +71,13 @@ export function FamilyTabs() {
             <Tab.Screen
                 name="Family"
                 component={FamilyStack}
+                listeners={({ navigation }) => ({
+                    tabPress: (e) => {
+                        // forza sempre la root della sezione Family
+                        e.preventDefault();
+                        navigation.navigate("Family", { screen: "FamilyRoot" });
+                    },
+                })}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon
@@ -84,6 +91,13 @@ export function FamilyTabs() {
             <Tab.Screen
                 name="Chores"
                 component={ChoresStack}
+                listeners={({ navigation }) => ({
+                    tabPress: (e) => {
+                        // forza sempre la root della sezione Chores
+                        e.preventDefault();
+                        navigation.navigate("Chores", { screen: "ChoresRoot" });
+                    },
+                })}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <TabIcon

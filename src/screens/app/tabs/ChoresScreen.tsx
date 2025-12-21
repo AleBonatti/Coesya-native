@@ -154,7 +154,7 @@ export function ChoresScreen() {
                             );
                         }}
                         ListEmptyComponent={
-                            <>
+                            <View>
                                 <View className="bg-auth-form rounded-xl p-5 mb-6 mt-10">
                                     <AppText>La tua famiglia non ha ancora impegni da completare.</AppText>
                                 </View>
@@ -164,7 +164,7 @@ export function ChoresScreen() {
                                     title="Gestione impegni"
                                     onPress={() => navigation.navigate("ChoresList")}
                                 />
-                            </>
+                            </View>
                         }
                     />
                 )}

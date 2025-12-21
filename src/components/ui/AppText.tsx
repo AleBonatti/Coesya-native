@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, TextProps } from "react-native";
 
-export type TextVariant = "primary" | "secondary" | "light";
+export type TextVariant = "primary" | "secondary" | "light" | "placeholder";
 export type TextWeight = "regular" | "medium" | "semibold" | "bold";
 interface AppTextProps extends TextProps {
     className?: string;
@@ -13,6 +13,7 @@ const variantClasses: Record<TextVariant, string> = {
     primary: "text-text-main",
     secondary: "text-brand-darker",
     light: "text-white",
+    placeholder: "text-text-light",
 };
 
 const weightClass: Record<TextWeight, string> = {

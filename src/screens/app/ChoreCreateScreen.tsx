@@ -11,6 +11,7 @@ import { Button } from "../../components/ui/Button";
 import { Checkbox } from "../../components/ui/Checkbox"; // il tuo checkbox con label clickabile
 import { useChoresStore } from "../../chores/choreStore";
 import { LinkText } from "../../components/ui/LinkText";
+import { SelectField, type SelectOption } from "../../components/ui/SelectField";
 import type { ChoresStackParamList } from "../../navigation/ChoresStack";
 import type { ChoreFrequency } from "../../chores/choreTypes";
 
@@ -23,8 +24,22 @@ const frequencies: Array<{ value: ChoreFrequency; label: string }> = [
     { value: "semiannual", label: "Semestrale" },
 ];
 
+const frequencyOptions: ReadonlyArray<SelectOption<ChoreFrequency>> = [
+    { value: "daily", label: "Giornaliera" },
+    { value: "weekly", label: "Settimanale" },
+    { value: "monthly", label: "Mensile" },
+    { value: "semiannual", label: "Semestrale" },
+];
+
 // per ora categorie stringa libera; se vuoi la renderemo select con icone
-const categories = ["Pulizia", "Burocrazia", "Spesa", "Altro"] as const;
+type ChoreCategory = "Pulizia" | "Burocrazia" | "Spesa" | "Altro";
+
+const categoryOptions: ReadonlyArray<SelectOption<ChoreCategory>> = [
+    { value: "Pulizia", label: "Pulizia" },
+    { value: "Burocrazia", label: "Burocrazia" },
+    { value: "Spesa", label: "Spesa" },
+    { value: "Altro", label: "Altro" },
+];
 
 export function ChoreCreateScreen() {
     const navigation = useNavigation<Nav>();
@@ -40,7 +55,7 @@ export function ChoreCreateScreen() {
 
     const [title, setTitle] = useState<string>("");
     const [frequency, setFrequency] = useState<ChoreFrequency>("weekly");
-    const [category, setCategory] = useState<(typeof categories)[number]>("Pulizia");
+    const [category, setCategory] = useState<ChoreCategory[number]>("Pulizia");
 
     const [weight, setWeight] = useState<number>(3);
     const [priority, setPriority] = useState<number>(3);
@@ -74,7 +89,7 @@ export function ChoreCreateScreen() {
     };
 
     return (
-        <AppShell>
+        <AppShell showHeader={false}>
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === "ios" ? "padding" : undefined}>
@@ -94,7 +109,7 @@ export function ChoreCreateScreen() {
                                 weight="medium"
                                 onPress={() => navigation.goBack()}
                                 className="text-xl font-medium">
-                                Gestione impegni
+                                Elenco impegni
                             </LinkText>
                         </Pressable>
                     </View>
@@ -104,7 +119,7 @@ export function ChoreCreateScreen() {
                         weight="semibold">
                         Crea nuovo impegno
                     </AppText>
-                    <AppText className="text-white/75 mt-1">Definisci un’attività ricorrente per la famiglia.</AppText>
+                    <AppText className="mt-1">Definisci un’attività ricorrente per la famiglia.</AppText>
 
                     {createError ? (
                         <Pressable
@@ -120,6 +135,7 @@ export function ChoreCreateScreen() {
                         <TextField
                             label="Titolo"
                             placeholder="Es. Lavare pavimento"
+                            variant="dark"
                             value={title}
                             onChangeText={(v) => {
                                 if (fieldErrors.title) clearFieldError("title");
@@ -129,50 +145,27 @@ export function ChoreCreateScreen() {
                         />
 
                         {/* Frequenza: per ora “segmented” semplice */}
-                        <View>
-                            <AppText
-                                className="mb-2"
-                                weight="semibold">
-                                Frequenza
-                            </AppText>
-                            <View className="flex-row gap-2 flex-wrap">
-                                {frequencies.map((f) => (
-                                    <Pressable
-                                        key={f.value}
-                                        onPress={() => {
-                                            if (fieldErrors.frequency) clearFieldError("frequency");
-                                            setFrequency(f.value);
-                                        }}
-                                        className={`px-4 py-3 rounded-xl bg-white/10 ${frequency === f.value ? "bg-white/20" : ""}`}>
-                                        <AppText weight="semibold">{f.label}</AppText>
-                                    </Pressable>
-                                ))}
-                            </View>
-                            {fieldErrors.frequency ? <AppText className="text-red-200 mt-2">{fieldErrors.frequency}</AppText> : null}
-                        </View>
+                        <SelectField
+                            label="Frequenza"
+                            value={frequency}
+                            options={frequencyOptions}
+                            onChange={(v) => {
+                                if (fieldErrors.frequency) clearFieldError("frequency");
+                                setFrequency(v);
+                            }}
+                            error={fieldErrors.frequency}
+                        />
 
-                        {/* Categoria */}
-                        <View>
-                            <AppText
-                                className="mb-2"
-                                weight="semibold">
-                                Categoria
-                            </AppText>
-                            <View className="flex-row gap-2 flex-wrap">
-                                {categories.map((c) => (
-                                    <Pressable
-                                        key={c}
-                                        onPress={() => {
-                                            if (fieldErrors.category) clearFieldError("category");
-                                            setCategory(c);
-                                        }}
-                                        className={`px-4 py-3 rounded-xl bg-white/10 ${category === c ? "bg-white/20" : ""}`}>
-                                        <AppText weight="semibold">{c}</AppText>
-                                    </Pressable>
-                                ))}
-                            </View>
-                            {fieldErrors.category ? <AppText className="text-red-200 mt-2">{fieldErrors.category}</AppText> : null}
-                        </View>
+                        <SelectField
+                            label="Categoria"
+                            value={category}
+                            options={categoryOptions}
+                            onChange={(v) => {
+                                if (fieldErrors.category) clearFieldError("category");
+                                setCategory(v);
+                            }}
+                            error={fieldErrors.category}
+                        />
 
                         {/* Weight/Priority (stepper semplice) */}
                         <View className="flex-row gap-3">
@@ -212,6 +205,7 @@ export function ChoreCreateScreen() {
                                 title="Crea impegno"
                                 onPress={handleSave}
                                 disabled={!canSubmit}
+                                variant="secondary"
                             />
                         </View>
                     </View>
@@ -228,13 +222,17 @@ function Stepper(props: { label: string; value: number; onChange: (value: number
     const inc = () => onChange(Math.min(5, value + 1));
 
     return (
-        <View className="flex-1 rounded-2xl bg-white/10 px-4 py-4">
-            <AppText weight="semibold">{label}</AppText>
+        <View className="flex-1">
+            <AppText
+                variant="placeholder"
+                className="text-base">
+                {label}
+            </AppText>
 
             <View className="flex-row items-center justify-between mt-3">
                 <Pressable
                     onPress={dec}
-                    className="w-10 h-10 rounded-xl bg-white/15 items-center justify-center active:bg-white/25">
+                    className="w-10 h-10 rounded-xl bg-black/15 items-center justify-center active:bg-white/25">
                     <Feather
                         name="minus"
                         size={18}
@@ -250,7 +248,7 @@ function Stepper(props: { label: string; value: number; onChange: (value: number
 
                 <Pressable
                     onPress={inc}
-                    className="w-10 h-10 rounded-xl bg-white/15 items-center justify-center active:bg-white/25">
+                    className="w-10 h-10 rounded-xl bg-black/15 items-center justify-center active:bg-white/25">
                     <Feather
                         name="plus"
                         size={18}
@@ -259,7 +257,7 @@ function Stepper(props: { label: string; value: number; onChange: (value: number
                 </Pressable>
             </View>
 
-            <AppText className="text-white/70 mt-2">1–5</AppText>
+            <AppText className="text-text-main mt-2">1–5</AppText>
         </View>
     );
 }
