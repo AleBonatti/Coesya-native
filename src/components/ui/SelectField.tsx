@@ -18,7 +18,7 @@ type SelectFieldProps<T extends string | number> = {
     error?: string;
 };
 
-export function SelectField<T extends string>({ label, value, options, onChange, placeholder = "Seleziona…", error }: SelectFieldProps<T>) {
+export function SelectField<T extends string | number>({ label, value, options, onChange, placeholder = "Seleziona…", error }: SelectFieldProps<T>) {
     const [open, setOpen] = useState(false);
 
     const selectedLabel = useMemo(() => {
