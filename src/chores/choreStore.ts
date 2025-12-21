@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { api, ApiError } from "../lib/api";
-import type { ActiveChore, ActiveChoresResponse, CompleteResponse, Chore, ChoresIndexResponse } from "./choreTypes";
+import type { ActiveChore, ActiveChoresResponse, CompleteResponse, Chore, ChoresIndexResponse, CreateChoreRequest, CreateChoreResponse } from "./choreTypes";
 
+type FieldErrors = Partial<Record<"title" | "frequency" | "category" | "weight" | "priority", string>>;
 interface ChoresState {
     chores: ActiveChore[];
     isLoading: boolean;
@@ -17,6 +18,15 @@ interface ChoresState {
     allChores: Chore[];
     isLoadingAll: boolean;
     fetchAll: () => Promise<void>;
+
+    // create
+    isCreating: boolean;
+    createError: string | null;
+    createFieldErrors: FieldErrors;
+
+    createChore: (data: CreateChoreRequest) => Promise<Chore>;
+    clearCreateFieldError: (field: keyof FieldErrors) => void;
+    clearCreateError: () => void;
 }
 
 export const useChoresStore = create<ChoresState>((set, get) => ({
@@ -29,6 +39,10 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
 
     allChores: [],
     isLoadingAll: false,
+
+    isCreating: false,
+    createError: null,
+    createFieldErrors: {},
 
     fetchActive: async () => {
         set({ isLoading: true, error: null });
@@ -118,6 +132,68 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
         } catch (e) {
             const msg = e instanceof ApiError ? e.message : "Errore nel caricamento degli impegni.";
             set({ isLoadingAll: false, error: msg });
+        }
+    },
+
+    clearCreateError: () => set({ createError: null }),
+    clearCreateFieldError: (field) =>
+        set((s) => {
+            if (!s.createFieldErrors[field]) return s;
+            const { [field]: _removed, ...rest } = s.createFieldErrors;
+            return { createFieldErrors: rest };
+        }),
+
+    createChore: async (data) => {
+        set({ isCreating: true, createError: null, createFieldErrors: {} });
+
+        const minDelayMs = 450;
+        const startedAt = Date.now();
+
+        try {
+            // 1) crea chore
+            const res = await api.post<CreateChoreResponse>("/chores", {
+                title: data.title,
+                frequency: data.frequency,
+                category: data.category,
+                weight: data.weight,
+                priority: data.priority,
+                is_active: data.is_active,
+            });
+
+            // 2) se richiesto, marca completato nel periodo corrente
+            if (data.completed_current_period) {
+                await api.post(`/chores/${res.chore.id}/complete`, {});
+            }
+
+            const elapsed = Date.now() - startedAt;
+            if (elapsed < minDelayMs) await new Promise<void>((r) => setTimeout(r, minDelayMs - elapsed));
+
+            set({ isCreating: false });
+            return res.chore;
+        } catch (e) {
+            const elapsed = Date.now() - startedAt;
+            if (elapsed < minDelayMs) await new Promise<void>((r) => setTimeout(r, minDelayMs - elapsed));
+
+            if (e instanceof ApiError && e.status === 422 && e.validationErrors) {
+                set({
+                    isCreating: false,
+                    createError: null,
+                    createFieldErrors: {
+                        title: e.validationErrors.title?.[0],
+                        frequency: e.validationErrors.frequency?.[0],
+                        category: e.validationErrors.category?.[0],
+                        weight: e.validationErrors.weight?.[0],
+                        priority: e.validationErrors.priority?.[0],
+                    },
+                });
+                throw e;
+            }
+
+            set({
+                isCreating: false,
+                createError: e instanceof ApiError ? e.message : "Si è verificato un errore. Riprova tra poco.",
+            });
+            throw e;
         }
     },
 }));

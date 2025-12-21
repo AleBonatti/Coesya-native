@@ -1,24 +1,3 @@
-/* export interface Chore {
-    id: number;
-    name: string;
-}
-
-export interface CreateChoreRequest {
-    name: string;
-}
-
-export interface CreateChoreResponse {
-    success: "ok";
-    chore: Chore;
-}
-export interface UpdateChoreRequest {
-    name: string;
-}
-export interface UpdateChoreResponse {
-    success: "ok";
-    chore: Chore;
-}
- */
 export type ChoreFrequency = "daily" | "weekly" | "monthly" | "semiannual";
 
 export interface ActiveChore {
@@ -66,4 +45,20 @@ export interface Chore {
 export interface ChoresIndexResponse {
     success: "ok";
     chores: Chore[];
+}
+export interface CreateChoreRequest {
+    title: string;
+    frequency: ChoreFrequency;
+    category: string;
+    weight: number;
+    priority: number;
+    is_active: boolean;
+
+    // non necessariamente salvato nel chore: è un “comportamento”
+    completed_current_period: boolean;
+}
+
+export interface CreateChoreResponse {
+    success: "ok";
+    chore: Chore;
 }

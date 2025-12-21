@@ -2,10 +2,12 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ChoresScreen } from "../screens/app/tabs/ChoresScreen";
 import { ChoresListScreen } from "../screens/app/ChoresListScreen";
+import { ChoreCreateScreen } from "../screens/app/ChoreCreateScreen";
 
 export type ChoresStackParamList = {
     ChoresRoot: undefined;
     ChoresList: undefined;
+    ChoreCreate: undefined;
 };
 
 const Stack = createNativeStackNavigator<ChoresStackParamList>();
@@ -20,6 +22,10 @@ export function ChoresStack() {
             <Stack.Screen
                 name="ChoresList"
                 component={ChoresListScreen}
+            />
+            <Stack.Screen
+                name="ChoreCreate"
+                component={ChoreCreateScreen}
             />
         </Stack.Navigator>
     );

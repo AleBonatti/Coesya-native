@@ -120,7 +120,7 @@ export function ChoresListScreen() {
                                     variant="dark"
                                     title="Crea nuovo impegno"
                                     onPress={() => {
-                                        // next step: navigation.navigate("ChoreCreate")
+                                        navigation.navigate("ChoreCreate");
                                     }}
                                 />
                                 {error ? <AppText className="text-red-200 mt-3">{error}</AppText> : null}
