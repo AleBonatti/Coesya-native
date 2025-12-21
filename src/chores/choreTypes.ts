@@ -1,3 +1,4 @@
+import { Category } from "../categories/categoryTypes";
 export type ChoreFrequency = "daily" | "weekly" | "monthly" | "semiannual";
 
 export interface ActiveChore {
@@ -14,6 +15,8 @@ export interface ActiveChore {
     is_completed: boolean;
     completed_at?: string | null;
     completed_by_user_id?: number | null;
+
+    category: Category;
 }
 
 export interface ActiveChoresResponse {
@@ -40,6 +43,7 @@ export interface Chore {
     is_active: boolean;
     weight: number;
     priority: number;
+    category: Category;
 }
 
 export interface ChoresIndexResponse {
