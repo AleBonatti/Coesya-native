@@ -63,12 +63,10 @@ export function ChoresListScreen() {
                         Gestione impegni
                     </LinkText>
                 </View>
-                <AppText className="text-white/75 mt-1">Elenco degli impegni salvati per la famiglia</AppText>
-
                 {isLoadingAll ? (
                     <View className="py-10 items-center">
                         <ActivityIndicator />
-                        <AppText className="mt-3 text-white/80">Caricamento…</AppText>
+                        <AppText className="mt-3">Caricamento…</AppText>
                     </View>
                 ) : (
                     <FlatList
@@ -85,7 +83,7 @@ export function ChoresListScreen() {
                                             <Feather
                                                 name={categoryIcon(item.title)}
                                                 size={18}
-                                                color="#FFFFFF"
+                                                color="#000000"
                                             />
                                         </View>
 
@@ -95,14 +93,14 @@ export function ChoresListScreen() {
                                                 className="text-lg">
                                                 {item.title}
                                             </AppText>
-                                            <AppText className="text-white/70 mt-1">
+                                            <AppText className="text-black mt-1">
                                                 {item.category_id} · {freqLabel(item.frequency)}
                                             </AppText>
                                         </View>
                                     </View>
 
                                     <View className="items-end">
-                                        <AppText className="text-white/70">{item.is_active ? "Attivo" : "Disattivo"}</AppText>
+                                        <AppText className="text-black">{item.is_active ? "Attivo" : "Disattivo"}</AppText>
                                     </View>
                                 </View>
                             </Pressable>

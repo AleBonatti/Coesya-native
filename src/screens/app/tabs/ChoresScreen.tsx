@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useCallback } from "react";
 import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 import { ChorePill } from "../../../components/chores/ChorePill";
 import { ChoresStackParamList } from "../../../navigation/ChoresStack";
@@ -22,9 +22,14 @@ export function ChoresScreen() {
     const fetchActive = useChoresStore((s) => s.fetchActive);
     const clearError = useChoresStore((s) => s.clearError);
 
-    useEffect(() => {
+    useFocusEffect(
+        useCallback(() => {
+            void fetchActive();
+        }, [fetchActive])
+    );
+    /* useEffect(() => {
         void fetchActive();
-    }, [fetchActive]);
+    }, [fetchActive]); */
 
     //const activeCount = chores.length;
     //const doneCount = useMemo(() => chores.filter((c) => c.is_completed).length, [chores]);
@@ -60,10 +65,9 @@ export function ChoresScreen() {
                 {error ? (
                     <Pressable
                         onPress={() => clearError()}
-                        className="mb-4 rounded-xl bg-red-500/20 px-4 py-3">
-                        <AppText weight="semibold">Errore</AppText>
-                        <AppText className="text-white/80 mt-1">{error}</AppText>
-                        <AppText className="text-white/60 mt-2">Tocca per chiudere</AppText>
+                        className="mb-4 rounded-xl bg-red-500 px-4 py-3">
+                        <AppText className="text-white">An error occurred: {error}</AppText>
+                        <AppText className="text-white">x</AppText>
                     </Pressable>
                 ) : null}
 
