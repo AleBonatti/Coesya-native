@@ -30,9 +30,9 @@ const ICO_MAP: Readonly<Record<string, FeatherIconName>> = {
  * Key = valore che arriva in category.ico
  */
 const COLOR_MAP: Readonly<Record<string, string>> = {
-    pulizia: "bg-brand-accent",
-    burocrazia: "bg-brand-primary",
-    spesa: "bg-red-500",
+    home: "bg-brand-tertiary",
+    book: "bg-brand-primary",
+    anchor: "bg-brand-accent",
     default: "bg-text-light", // fallback
 };
 

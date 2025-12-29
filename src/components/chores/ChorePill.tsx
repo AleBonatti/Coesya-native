@@ -46,24 +46,22 @@ export function ChorePill({ item }: ChorePillProps) {
                         {item.title}
                     </AppText>
 
-                    <View className="flex-row flex-wrap gap-1 mt-2 items-center">
+                    <View className="flex-row flex-wrap gap-1 items-center">
                         {/* <AppText variant="placeholder">{item.category.title}</AppText> */}
                         {/* <AppText variant="placeholder">•</AppText> */}
                         {/* <View className="rounded-full bg-white/15 px-3 py-1">
                             <AppText>{frequencyLabel(item.frequency)}</AppText>
                         </View> */}
-
                         <AppText
                             variant="placeholder"
                             className="text-sm">
                             {formatDue(item.due_at)}
                         </AppText>
-
-                        {/* <View className="rounded-full bg-white/15 px-3 py-1">
-                            <AppText>
-                                P {item.priority} · W {item.weight}
-                            </AppText>
-                        </View> */}
+                        <AppText
+                            variant="placeholder"
+                            className="text-sm">
+                            - P{item.priority} · W{item.weight}
+                        </AppText>
                     </View>
                 </View>
 
