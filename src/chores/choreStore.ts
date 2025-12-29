@@ -95,7 +95,8 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
                     ),
                 }));
             } else {
-                const res = await api.del<CompleteResponse>(`/chores/${choreId}/complete`);
+                //const res = await api.del<CompleteResponse>(`/chores/${choreId}/complete`);
+                const res = await api.post<CompleteResponse>(`/chores/${choreId}/uncomplete`, {});
                 set((s) => ({
                     chores: s.chores.map((c) =>
                         c.id === choreId
@@ -164,6 +165,15 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
             if (data.completed_current_period) {
                 await api.post(`/chores/${res.chore.id}/complete`, {});
             }
+
+            // ✅ 3) aggiorno subito la lista "gestione"
+            set((s) => ({
+                allChores: [res.chore, ...s.allChores],
+            }));
+
+            // ✅ 4) riallineo la lista "attivi per periodo"
+            // (robusto: include period_key/completed_at ecc.)
+            await get().fetchActive();
 
             const elapsed = Date.now() - startedAt;
             if (elapsed < minDelayMs) await new Promise<void>((r) => setTimeout(r, minDelayMs - elapsed));

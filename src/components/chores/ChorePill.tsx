@@ -6,6 +6,7 @@ import { Feather } from "@expo/vector-icons";
 import { AppText } from "../ui/AppText";
 import { ActiveChore, Chore } from "../../chores/choreTypes";
 import { useChoresStore } from "../../chores/choreStore";
+import { CategoryIcon } from "./CategoryIcon";
 
 interface ChorePillProps {
     item: ActiveChore;
@@ -24,13 +25,17 @@ export function ChorePill({ item }: ChorePillProps) {
             accessibilityLabel={item.is_completed ? "Segna come non completato" : "Segna come completato"}>
             <View className="flex-row items-center">
                 {/* ICONA CATEGORIA */}
-                <View className="w-10 h-10 rounded-full bg-text-light items-center justify-center mr-3">
+                {/* <View className="w-10 h-10 rounded-full bg-text-light items-center justify-center mr-3">
                     <Feather
                         name={(item.category.ico ?? "tag") as React.ComponentProps<typeof Feather>["name"]}
                         size={18}
                         color="#FFFFFF"
                     />
-                </View>
+                </View> */}
+                <CategoryIcon
+                    category={item.category}
+                    is_completed={item.is_completed}
+                />
 
                 {/* TESTI */}
                 <View className="flex-1 pr-3">
