@@ -10,6 +10,7 @@ import { type MainStackParamList } from "../../../navigation/MainStackParamList"
 import { LinkText } from "../../../components/ui/LinkText";
 import { AppIcon, type AppIconName } from "../../../components/ui/AppIcon";
 import { Avatar } from "../../../components/ui/Avatar";
+import { IconButton } from "../../../components/ui/IconButton";
 
 type Nav = NativeStackNavigationProp<MainStackParamList>;
 
@@ -45,22 +46,15 @@ export function FamilyHomeScreen() {
                                 {family.name}
                             </AppText>
 
-                            <Pressable
-                                onPress={() => {
-                                    if (!family) return;
-                                    navigation.navigate("FamilyTabs", {
-                                        screen: "Family",
-                                    });
-                                }}
-                                className="px-2 py-2 rounded-full bg-brand-primary"
-                                accessibilityRole="button"
-                                accessibilityLabel="Dettaglio famiglia">
-                                <AppIcon
-                                    name="arrow-forward"
-                                    size={15}
-                                    color="#FFFFFF"
-                                />
-                            </Pressable>
+                            <IconButton
+                                icon="arrow-forward"
+                                onPress={() => {}}
+                                bgClass="bg-brand-primary"
+                                color="#FFFFFF"
+                                wClass="w-8"
+                                hClass="h-8"
+                            />
+                            {/* </Pressable> */}
                         </View>
 
                         <View className="bg-auth-form rounded-xl p-5 mt-10">
