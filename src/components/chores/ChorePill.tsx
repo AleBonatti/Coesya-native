@@ -2,7 +2,7 @@
 import React from "react";
 import { View, ActivityIndicator } from "react-native";
 import { Pressable } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { AppIcon } from "../../components/ui/AppIcon";
 import { AppText } from "../ui/AppText";
 import { ActiveChore, Chore } from "../../chores/choreTypes";
 import { useChoresStore } from "../../chores/choreStore";
@@ -25,13 +25,6 @@ export function ChorePill({ item }: ChorePillProps) {
             accessibilityLabel={item.is_completed ? "Segna come non completato" : "Segna come completato"}>
             <View className="flex-row items-center">
                 {/* ICONA CATEGORIA */}
-                {/* <View className="w-10 h-10 rounded-full bg-text-light items-center justify-center mr-3">
-                    <Feather
-                        name={(item.category.ico ?? "tag") as React.ComponentProps<typeof Feather>["name"]}
-                        size={18}
-                        color="#FFFFFF"
-                    />
-                </View> */}
                 <CategoryIcon
                     category={item.category}
                     is_completed={item.is_completed}
@@ -46,36 +39,34 @@ export function ChorePill({ item }: ChorePillProps) {
                         {item.title}
                     </AppText>
 
-                    <View className="flex-row flex-wrap gap-1 mt-2 items-center">
+                    <View className="flex-row flex-wrap gap-1 items-center">
                         {/* <AppText variant="placeholder">{item.category.title}</AppText> */}
                         {/* <AppText variant="placeholder">•</AppText> */}
                         {/* <View className="rounded-full bg-white/15 px-3 py-1">
                             <AppText>{frequencyLabel(item.frequency)}</AppText>
                         </View> */}
-
                         <AppText
                             variant="placeholder"
                             className="text-sm">
                             {formatDue(item.due_at)}
                         </AppText>
-
-                        {/* <View className="rounded-full bg-white/15 px-3 py-1">
-                            <AppText>
-                                P {item.priority} · W {item.weight}
-                            </AppText>
-                        </View> */}
+                        <AppText
+                            variant="placeholder"
+                            className="text-sm">
+                            - P{item.priority} · W{item.weight}
+                        </AppText>
                     </View>
                 </View>
 
                 {/* STATO */}
-                <View className="w-10 h-10 rounded-full items-center justify-center bg-auth-form">
+                <View className="">
                     {isToggling ? (
                         <ActivityIndicator />
                     ) : (
-                        <Feather
-                            name={item.is_completed ? "check" : "circle"}
-                            size={20}
-                            color="#121212"
+                        <AppIcon
+                            name={item.is_completed ? "checkmark-circle-outline" : "ellipse-outline"}
+                            size={24}
+                            color="#868686"
                         />
                     )}
                 </View>

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { AppIcon } from "../../components/ui/AppIcon";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { ChoresStackParamList } from "../../navigation/ChoresStack";
@@ -10,6 +10,7 @@ import { Button } from "../../components/ui/Button";
 import { LinkText } from "../../components/ui/LinkText";
 import { useChoresStore } from "../../chores/choreStore";
 import type { Chore } from "../../chores/choreTypes";
+import { CategoryIcon } from "../../components/chores/CategoryIcon";
 
 type Nav = NativeStackNavigationProp<ChoresStackParamList>;
 
@@ -26,15 +27,6 @@ function freqLabel(f: Chore["frequency"]): string {
     }
 }
 
-function categoryIcon(category: string): React.ComponentProps<typeof Feather>["name"] {
-    // mapping semplice (poi lo raffiniamo)
-    const c = category.toLowerCase();
-    if (c.includes("pul")) return "droplet";
-    if (c.includes("bur")) return "file-text";
-    if (c.includes("spes")) return "shopping-cart";
-    return "tag";
-}
-
 export function ChoresListScreen() {
     const navigation = useNavigation<Nav>();
     const allChores = useChoresStore((s) => s.allChores);
@@ -48,12 +40,15 @@ export function ChoresListScreen() {
     }, [fetchAll]);
 
     return (
-        <AppShell showHeader={false}>
+        <AppShell
+            showHeader={false}
+            padded={false}>
             <View className="mt-4">
-                <View className="flex-row items-center mb-6 mt-4 gap-3">
-                    <Feather
-                        name="chevron-left"
+                <View className="flex-row items-center mb-6 mt-4 gap-3 px-4">
+                    <AppIcon
+                        name="chevron-back"
                         size={24}
+                        color="#121212"
                     />
                     <LinkText
                         variant="dark"
@@ -70,37 +65,56 @@ export function ChoresListScreen() {
                     </View>
                 ) : (
                     <FlatList
-                        className="mt-6"
                         data={allChores}
                         keyExtractor={(item) => String(item.id)}
                         contentContainerStyle={{ paddingBottom: 140 }}
-                        ItemSeparatorComponent={() => <View className="h-3" />}
+                        ItemSeparatorComponent={() => <View className="" />}
                         renderItem={({ item }) => (
-                            <Pressable className="rounded-2xl bg-white/15 px-4 py-4 active:bg-white/20">
-                                <View className="flex-row items-center justify-between">
-                                    <View className="flex-row items-center gap-3 flex-1 pr-3">
-                                        <View className="w-10 h-10 rounded-xl bg-white/10 items-center justify-center">
-                                            <Feather
-                                                name={categoryIcon(item.title)}
-                                                size={18}
-                                                color="#000000"
-                                            />
-                                        </View>
+                            <Pressable
+                                className="rounded-2xl"
+                                onPress={() => navigation.navigate("ChoreCreate", { choreId: item.id })}>
+                                <View className="flex-row items-center justify-between border-b border-text-light px-6 py-4">
+                                    <View className="flex-row items-center flex-1">
+                                        <CategoryIcon
+                                            category={item.category}
+                                            is_completed={false}
+                                        />
 
                                         <View className="flex-1">
                                             <AppText
-                                                weight="semibold"
-                                                className="text-lg">
+                                                weight="medium"
+                                                className="text-base">
                                                 {item.title}
                                             </AppText>
-                                            <AppText className="text-black mt-1">
-                                                {item.category_id} · {freqLabel(item.frequency)}
-                                            </AppText>
+                                            <AppText>{freqLabel(item.frequency)}</AppText>
                                         </View>
                                     </View>
 
-                                    <View className="items-end">
-                                        <AppText className="text-black">{item.is_active ? "Attivo" : "Disattivo"}</AppText>
+                                    <View className="flex-row items-end gap-4">
+                                        <AppText
+                                            weight="semibold"
+                                            className="text-base">
+                                            <View className="flex-row gap-1">
+                                                {item.weight}
+                                                <AppIcon
+                                                    name="list"
+                                                    size={18}
+                                                    color="#121212"
+                                                />
+                                            </View>
+                                        </AppText>
+                                        <AppText
+                                            weight="semibold"
+                                            className="text-base">
+                                            <View className="flex-row">
+                                                {item.priority}
+                                                <AppIcon
+                                                    name="thermometer-outline"
+                                                    size={18}
+                                                    color="#121212"
+                                                />
+                                            </View>
+                                        </AppText>
                                     </View>
                                 </View>
                             </Pressable>
@@ -113,7 +127,7 @@ export function ChoresListScreen() {
                             </View>
                         }
                         ListFooterComponent={
-                            <View className="mt-6">
+                            <View className="mt-6 px-6">
                                 <Button
                                     variant="dark"
                                     title="Crea nuovo impegno"

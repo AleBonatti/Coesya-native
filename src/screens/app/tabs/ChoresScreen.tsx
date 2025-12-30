@@ -56,7 +56,7 @@ export function ChoresScreen() {
                             onPress={() => void fetchActive()}
                         />
                         <IconButton
-                            icon="refresh-ccw"
+                            icon="refresh"
                             onPress={() => {}}
                         />
                     </View>

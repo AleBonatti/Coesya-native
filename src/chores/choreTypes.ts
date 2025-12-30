@@ -66,3 +66,12 @@ export interface CreateChoreResponse {
     success: "ok";
     chore: Chore;
 }
+
+export type UpdateChoreRequest = CreateChoreRequest; // stessa shape va benissimo
+export interface UpdateChoreResponse {
+    success: "ok";
+    chore: Chore;
+}
+export interface DeleteChoreResponse {
+    success: "ok";
+}

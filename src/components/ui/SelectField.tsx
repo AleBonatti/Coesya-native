@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Modal, Pressable, View, FlatList } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { AppIcon } from "../../components/ui/AppIcon";
 import { AppText } from "./AppText";
 
 export type SelectOption<T extends string | number> = {
@@ -41,7 +41,7 @@ export function SelectField<T extends string | number>({ label, value, options, 
                 accessibilityLabel={label}>
                 <AppText className={selectedLabel ? "text-base" : "text-base text-white/60"}>{selectedLabel || placeholder}</AppText>
 
-                <Feather
+                <AppIcon
                     name="chevron-down"
                     size={18}
                     color="#121212"
@@ -72,8 +72,8 @@ export function SelectField<T extends string | number>({ label, value, options, 
                         <Pressable
                             onPress={() => setOpen(false)}
                             accessibilityRole="button">
-                            <Feather
-                                name="x"
+                            <AppIcon
+                                name="close-outline"
                                 size={20}
                                 color="#111"
                             />
@@ -101,8 +101,8 @@ export function SelectField<T extends string | number>({ label, value, options, 
                                         {item.label}
                                     </AppText>
                                     {isSelected ? (
-                                        <Feather
-                                            name="check"
+                                        <AppIcon
+                                            name="checkmark"
                                             size={18}
                                             color="#111"
                                         />

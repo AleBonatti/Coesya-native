@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { api, ApiError } from "../lib/api";
-import type { ActiveChore, ActiveChoresResponse, CompleteResponse, Chore, ChoresIndexResponse, CreateChoreRequest, CreateChoreResponse } from "./choreTypes";
+import type { ActiveChore, ActiveChoresResponse, CompleteResponse, Chore, ChoresIndexResponse, CreateChoreRequest, CreateChoreResponse, UpdateChoreRequest, UpdateChoreResponse, DeleteChoreResponse } from "./choreTypes";
 
 type FieldErrors = Partial<Record<"title" | "frequency" | "category_id" | "weight" | "priority", string>>;
 interface ChoresState {
@@ -19,12 +19,18 @@ interface ChoresState {
     isLoadingAll: boolean;
     fetchAll: () => Promise<void>;
 
-    // create
     isCreating: boolean;
     createError: string | null;
     createFieldErrors: FieldErrors;
 
     createChore: (data: CreateChoreRequest) => Promise<Chore>;
+    updateChore: (choreId: number, data: UpdateChoreRequest) => Promise<Chore>;
+    deleteChore: (choreId: number) => Promise<void>;
+
+    isDeleting: boolean;
+    deleteError: string | null;
+
+    clearDeleteError: () => void;
     clearCreateFieldError: (field: keyof FieldErrors) => void;
     clearCreateError: () => void;
 }
@@ -43,6 +49,10 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
     isCreating: false,
     createError: null,
     createFieldErrors: {},
+
+    isDeleting: false,
+    deleteError: null,
+    clearDeleteError: () => set({ deleteError: null }),
 
     fetchActive: async () => {
         set({ isLoading: true, error: null });
@@ -203,6 +213,106 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
                 isCreating: false,
                 createError: e instanceof ApiError ? e.message : "Si è verificato un errore. Riprova tra poco.",
             });
+            throw e;
+        }
+    },
+
+    updateChore: async (choreId, data) => {
+        set({ isCreating: true, createError: null, createFieldErrors: {} });
+
+        const minDelayMs = 450;
+        const startedAt = Date.now();
+
+        try {
+            console.log(choreId, data, data.category_id);
+            const res = await api.patch<UpdateChoreResponse>(`/chores/${choreId}`, {
+                title: data.title,
+                frequency: data.frequency,
+                category_id: data.category_id,
+                weight: data.weight,
+                priority: data.priority,
+                is_active: data.is_active,
+            });
+
+            const elapsed = Date.now() - startedAt;
+            if (elapsed < minDelayMs) await new Promise<void>((r) => setTimeout(r, minDelayMs - elapsed));
+
+            // aggiorno lista gestione
+            set((s) => ({
+                isCreating: false,
+                allChores: s.allChores.map((c) => (c.id === res.chore.id ? res.chore : c)),
+            }));
+
+            // riallineo active (robusto)
+            await get().fetchActive();
+
+            return res.chore;
+        } catch (e) {
+            const elapsed = Date.now() - startedAt;
+            if (elapsed < minDelayMs) await new Promise<void>((r) => setTimeout(r, minDelayMs - elapsed));
+
+            if (e instanceof ApiError && e.status === 422 && e.validationErrors) {
+                set({
+                    isCreating: false,
+                    createError: null,
+                    createFieldErrors: {
+                        title: e.validationErrors.title?.[0],
+                        frequency: e.validationErrors.frequency?.[0],
+                        category_id: e.validationErrors.category_id?.[0],
+                        weight: e.validationErrors.weight?.[0],
+                        priority: e.validationErrors.priority?.[0],
+                    },
+                });
+                throw e;
+            }
+
+            set({
+                isCreating: false,
+                createError: e instanceof ApiError ? e.message : "Si è verificato un errore. Riprova tra poco.",
+            });
+            throw e;
+        }
+    },
+
+    deleteChore: async (choreId) => {
+        set({ isDeleting: true, deleteError: null });
+
+        const minDelayMs = 350;
+        const startedAt = Date.now();
+
+        // snapshot per rollback
+        const prevAll = get().allChores;
+
+        // optimistic remove dalla lista gestione
+        set((s) => ({
+            allChores: s.allChores.filter((c) => c.id !== choreId),
+        }));
+
+        try {
+            await api.del<DeleteChoreResponse>(`/chores/${choreId}`);
+
+            const elapsed = Date.now() - startedAt;
+            if (elapsed < minDelayMs) {
+                await new Promise<void>((r) => setTimeout(r, minDelayMs - elapsed));
+            }
+
+            set({ isDeleting: false });
+
+            // riallineo lista attivi per periodo (in caso fosse presente)
+            await get().fetchActive();
+        } catch (e) {
+            const elapsed = Date.now() - startedAt;
+            if (elapsed < minDelayMs) {
+                await new Promise<void>((r) => setTimeout(r, minDelayMs - elapsed));
+            }
+
+            // rollback
+            set({
+                isDeleting: false,
+                allChores: prevAll,
+                deleteError: e instanceof ApiError ? e.message : "Eliminazione non riuscita. Riprova.",
+            });
+
             throw e;
         }
     },
