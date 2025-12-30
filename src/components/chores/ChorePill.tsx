@@ -2,7 +2,7 @@
 import React from "react";
 import { View, ActivityIndicator } from "react-native";
 import { Pressable } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { AppIcon } from "../../components/ui/AppIcon";
 import { AppText } from "../ui/AppText";
 import { ActiveChore, Chore } from "../../chores/choreTypes";
 import { useChoresStore } from "../../chores/choreStore";
@@ -25,13 +25,6 @@ export function ChorePill({ item }: ChorePillProps) {
             accessibilityLabel={item.is_completed ? "Segna come non completato" : "Segna come completato"}>
             <View className="flex-row items-center">
                 {/* ICONA CATEGORIA */}
-                {/* <View className="w-10 h-10 rounded-full bg-text-light items-center justify-center mr-3">
-                    <Feather
-                        name={(item.category.ico ?? "tag") as React.ComponentProps<typeof Feather>["name"]}
-                        size={18}
-                        color="#FFFFFF"
-                    />
-                </View> */}
                 <CategoryIcon
                     category={item.category}
                     is_completed={item.is_completed}
@@ -70,8 +63,8 @@ export function ChorePill({ item }: ChorePillProps) {
                     {isToggling ? (
                         <ActivityIndicator />
                     ) : (
-                        <Feather
-                            name={item.is_completed ? "check" : "circle"}
+                        <AppIcon
+                            name={item.is_completed ? "checkmark" : "ellipse-outline"}
                             size={20}
                             color="#121212"
                         />

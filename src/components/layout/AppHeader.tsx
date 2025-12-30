@@ -1,6 +1,6 @@
 import React, { use } from "react";
 import { Image, Pressable, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { AppIcon } from "../../components/ui/AppIcon";
 import { DrawerActions, useNavigation, type NavigationProp } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { MainStackParamList } from "../../navigation/MainStackParamList";
@@ -53,9 +53,9 @@ export function AppHeader() {
                 onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
                 accessibilityRole="button"
                 accessibilityLabel="Impostazioni">
-                <Feather
-                    name="settings"
-                    size={22}
+                <AppIcon
+                    name="settings-outline"
+                    size={24}
                     color={iconColor}
                 />
             </Pressable>

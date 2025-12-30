@@ -7,7 +7,7 @@ import { CommonActions } from "@react-navigation/native";
 
 import { Pressable, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Feather } from "@expo/vector-icons";
+import { AppIcon } from "../components/ui/AppIcon";
 
 import { AppText, type TextVariant } from "../components/ui/AppText";
 import { useAuthStore } from "../auth/authStore";
@@ -58,8 +58,8 @@ function DrawerContent({ navigation }: DrawerContentComponentProps) {
                         onPress={() => {
                             navigation.closeDrawer();
                         }}>
-                        <Feather
-                            name="x"
+                        <AppIcon
+                            name="close-outline"
                             size={22}
                             color="#FFFFFF"
                         />

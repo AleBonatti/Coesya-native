@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { AppIcon, type AppIconName } from "../../components/ui/AppIcon";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { ChoresStackParamList } from "../../navigation/ChoresStack";
@@ -54,8 +54,8 @@ export function ChoresListScreen() {
             padded={false}>
             <View className="mt-4">
                 <View className="flex-row items-center mb-6 mt-4 gap-3 px-4">
-                    <Feather
-                        name="chevron-left"
+                    <AppIcon
+                        name="chevron-back"
                         size={24}
                     />
                     <LinkText
@@ -96,9 +96,31 @@ export function ChoresListScreen() {
                                         </View>
                                     </View>
 
-                                    <View className="flex-row items-end">
-                                        <AppText>{item.weight}</AppText>
-                                        <AppText>{item.priority}</AppText>
+                                    <View className="flex-row items-end gap-4">
+                                        <AppText
+                                            weight="semibold"
+                                            className="text-base">
+                                            <View className="flex-row gap-1">
+                                                {item.weight}
+                                                <AppIcon
+                                                    name="list"
+                                                    size={18}
+                                                    color="#121212"
+                                                />
+                                            </View>
+                                        </AppText>
+                                        <AppText
+                                            weight="semibold"
+                                            className="text-base">
+                                            <View className="flex-row">
+                                                {item.priority}
+                                                <AppIcon
+                                                    name="thermometer-outline"
+                                                    size={18}
+                                                    color="#121212"
+                                                />
+                                            </View>
+                                        </AppText>
                                     </View>
                                 </View>
                             </Pressable>

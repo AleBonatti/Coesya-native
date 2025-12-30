@@ -1,9 +1,10 @@
 import React from "react";
 import { View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+//import { AppIcon, type AppIconName } from "../../../components/ui/AppIcon";
+import { AppIcon, type AppIconName } from "../components/ui/AppIcon";
 
-import { StackActions, type NavigatorScreenParams } from "@react-navigation/native";
+import type { NavigatorScreenParams } from "@react-navigation/native";
 import type { FamilyStackParamList } from "./FamilyStack";
 import type { ChoresStackParamList } from "./ChoresStack";
 
@@ -62,7 +63,7 @@ export function FamilyTabs() {
                     tabBarIcon: ({ focused }) => (
                         <TabIcon
                             focused={focused}
-                            icon="home"
+                            icon="home-outline"
                         />
                     ),
                 }}
@@ -82,7 +83,7 @@ export function FamilyTabs() {
                     tabBarIcon: ({ focused }) => (
                         <TabIcon
                             focused={focused}
-                            icon="users"
+                            icon="people-outline"
                         />
                     ),
                 }}
@@ -102,7 +103,7 @@ export function FamilyTabs() {
                     tabBarIcon: ({ focused }) => (
                         <TabIcon
                             focused={focused}
-                            icon="command"
+                            icon="list-outline"
                         />
                     ),
                 }}
@@ -115,7 +116,7 @@ export function FamilyTabs() {
                     tabBarIcon: ({ focused }) => (
                         <TabIcon
                             focused={focused}
-                            icon="gift"
+                            icon="trophy-outline"
                         />
                     ),
                 }}
@@ -124,7 +125,7 @@ export function FamilyTabs() {
     );
 }
 
-function TabIcon({ focused, icon }: { focused: boolean; icon: React.ComponentProps<typeof Feather>["name"] }) {
+function TabIcon({ focused, icon }: { focused: boolean; icon: AppIconName }) {
     return (
         <View
             style={{
@@ -135,7 +136,7 @@ function TabIcon({ focused, icon }: { focused: boolean; icon: React.ComponentPro
                 justifyContent: "center",
                 backgroundColor: focused ? "#5E134C" : "transparent",
             }}>
-            <Feather
+            <AppIcon
                 name={icon}
                 size={22}
                 color={focused ? "#FFA500" : "#FFFFFF"}

@@ -1,10 +1,9 @@
 import React from "react";
 import { View } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { ActiveChore } from "../../chores/choreTypes";
+import { Ionicons } from "@expo/vector-icons";
 import { Category } from "../../categories/categoryTypes";
 
-type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
+type FeatherIconName = React.ComponentProps<typeof Ionicons>["name"];
 
 interface CategoryIconProps {
     category: Category | null | undefined;
@@ -15,14 +14,15 @@ interface CategoryIconProps {
 /**
  * Whitelist delle icone consentite (sicura).
  * Key = valore che arriva in category.ico
- * Value = nome icona Feather
+ * Value = nome icona
  */
 const ICO_MAP: Readonly<Record<string, FeatherIconName>> = {
     home: "home",
-    book: "book",
-    tool: "tool",
-    anchor: "anchor",
-    default: "tag",
+    bureaucracy: "book",
+    pets: "paw",
+    "do-it-yourself": "hammer",
+    shopping: "bag",
+    default: "pricetag-outline",
 };
 
 /**
@@ -31,8 +31,9 @@ const ICO_MAP: Readonly<Record<string, FeatherIconName>> = {
  */
 const COLOR_MAP: Readonly<Record<string, string>> = {
     home: "bg-brand-tertiary",
-    book: "bg-brand-primary",
-    anchor: "bg-brand-accent",
+    bureaucracy: "bg-brand-primary",
+    pets: "bg-brand-accent",
+    shopping: "bg-brand-darker",
     default: "bg-text-light", // fallback
 };
 
@@ -56,7 +57,7 @@ export function CategoryIcon({ category, is_completed, size = 18 }: CategoryIcon
 
     return (
         <View className={`w-10 h-10 rounded-full items-center justify-center mr-3 ${bgClass}`}>
-            <Feather
+            <Ionicons
                 name={iconName}
                 size={size}
                 color="#FFFFFF"

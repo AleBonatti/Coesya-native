@@ -6,7 +6,7 @@ import type { MainStackParamList } from "../../navigation/MainStackParamList";
 
 import { useAuthStore } from "../../auth/authStore";
 
-import { Feather } from "@expo/vector-icons";
+import { AppIcon } from "../../components/ui/AppIcon";
 import { AppShell } from "../../components/layout/AppShell";
 import { AppText } from "../../components/ui/AppText";
 import { LinkText } from "../../components/ui/LinkText";
@@ -48,8 +48,8 @@ export function CreateFamilyScreen({ navigation }: Props) {
     return (
         <AppShell backgroundClassName="bg-transparent">
             <View className="flex-row items-center mb-6 mt-4 gap-3">
-                <Feather
-                    name="chevron-left"
+                <AppIcon
+                    name="chevron-back"
                     size={24}
                     color="#FFFFFF"
                 />

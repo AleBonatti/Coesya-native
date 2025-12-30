@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { Pressable, View, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { AppIcon } from "../../components/ui/AppIcon";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
@@ -103,8 +103,8 @@ export function ChoreCreateScreen() {
                     keyboardShouldPersistTaps="handled">
                     <View className="flex-row items-center justify-between pt-2 mb-4">
                         <Pressable className="flex-row items-center gap-2 py-2">
-                            <Feather
-                                name="chevron-left"
+                            <AppIcon
+                                name="chevron-back"
                                 size={22}
                             />
                             <LinkText
@@ -227,8 +227,8 @@ function Stepper(props: { label: string; value: number; onChange: (value: number
                 <Pressable
                     onPress={dec}
                     className="w-10 h-10 rounded-xl bg-black/15 items-center justify-center active:bg-white/25">
-                    <Feather
-                        name="minus"
+                    <AppIcon
+                        name="remove"
                         size={18}
                         color="#121212"
                     />
@@ -243,8 +243,8 @@ function Stepper(props: { label: string; value: number; onChange: (value: number
                 <Pressable
                     onPress={inc}
                     className="w-10 h-10 rounded-xl bg-black/15 items-center justify-center active:bg-white/25">
-                    <Feather
-                        name="plus"
+                    <AppIcon
+                        name="add"
                         size={18}
                         color="#121212"
                     />

@@ -8,7 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { type MainStackParamList } from "../../../navigation/MainStackParamList";
 import { LinkText } from "../../../components/ui/LinkText";
-import { Feather } from "@expo/vector-icons";
+import { AppIcon, type AppIconName } from "../../../components/ui/AppIcon";
 import { Avatar } from "../../../components/ui/Avatar";
 
 type Nav = NativeStackNavigationProp<MainStackParamList>;
@@ -55,8 +55,8 @@ export function FamilyHomeScreen() {
                                 className="px-2 py-2 rounded-full bg-brand-primary"
                                 accessibilityRole="button"
                                 accessibilityLabel="Dettaglio famiglia">
-                                <Feather
-                                    name="arrow-right"
+                                <AppIcon
+                                    name="arrow-forward"
                                     size={15}
                                     color="#FFFFFF"
                                 />

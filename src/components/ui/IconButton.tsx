@@ -1,7 +1,7 @@
 import { ActivityIndicator, Pressable, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { AppIcon, type AppIconName } from "../../components/ui/AppIcon";
 
-export function IconButton({ icon, onPress, isLoading = false }: { icon: React.ComponentProps<typeof Feather>["name"]; onPress: () => void; isLoading?: boolean }) {
+export function IconButton({ icon, onPress, isLoading = false }: { icon: AppIconName; onPress: () => void; isLoading?: boolean }) {
     return (
         <Pressable
             onPress={onPress}
@@ -11,7 +11,7 @@ export function IconButton({ icon, onPress, isLoading = false }: { icon: React.C
             {isLoading ? (
                 <ActivityIndicator size="small" />
             ) : (
-                <Feather
+                <AppIcon
                     name={icon}
                     size={20}
                     color="#868686"
