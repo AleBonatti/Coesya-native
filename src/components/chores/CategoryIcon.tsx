@@ -33,6 +33,7 @@ const COLOR_MAP: Readonly<Record<string, string>> = {
     home: "bg-brand-tertiary",
     bureaucracy: "bg-brand-primary",
     pets: "bg-brand-accent",
+    "do-it-yourself": "bg-text-main",
     shopping: "bg-brand-darker",
     default: "bg-text-light", // fallback
 };

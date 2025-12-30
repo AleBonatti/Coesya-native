@@ -7,7 +7,7 @@ import { ChoreCreateScreen } from "../screens/app/ChoreCreateScreen";
 export type ChoresStackParamList = {
     ChoresRoot: undefined;
     ChoresList: undefined;
-    ChoreCreate: undefined;
+    ChoreCreate: { choreId?: number } | undefined;
 };
 
 const Stack = createNativeStackNavigator<ChoresStackParamList>();

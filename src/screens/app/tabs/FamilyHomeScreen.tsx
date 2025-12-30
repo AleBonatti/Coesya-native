@@ -67,7 +67,11 @@ export function FamilyHomeScreen() {
                             <AppText>La tua famiglia non ha ancora impegni da completare. Sii il primo a dare inizio a momenti di collaborazione!</AppText>
 
                             <LinkText
-                                onPress={() => {}}
+                                onPress={() => {
+                                    navigation.navigate("FamilyTabs", {
+                                        screen: "Chores",
+                                    });
+                                }}
                                 className="mt-10">
                                 Clicca qui per creare il tuo primo impegno familiare.
                             </LinkText>

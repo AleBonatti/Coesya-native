@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
-import { AppIcon, type AppIconName } from "../../components/ui/AppIcon";
+import { AppIcon } from "../../components/ui/AppIcon";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { ChoresStackParamList } from "../../navigation/ChoresStack";
@@ -27,15 +27,6 @@ function freqLabel(f: Chore["frequency"]): string {
     }
 }
 
-/* function categoryIcon(category: string): React.ComponentProps<typeof Feather>["name"] {
-    // mapping semplice (poi lo raffiniamo)
-    const c = category.toLowerCase();
-    if (c.includes("pul")) return "droplet";
-    if (c.includes("bur")) return "file-text";
-    if (c.includes("spes")) return "shopping-cart";
-    return "tag";
-} */
-
 export function ChoresListScreen() {
     const navigation = useNavigation<Nav>();
     const allChores = useChoresStore((s) => s.allChores);
@@ -57,6 +48,7 @@ export function ChoresListScreen() {
                     <AppIcon
                         name="chevron-back"
                         size={24}
+                        color="#121212"
                     />
                     <LinkText
                         variant="dark"
@@ -78,7 +70,9 @@ export function ChoresListScreen() {
                         contentContainerStyle={{ paddingBottom: 140 }}
                         ItemSeparatorComponent={() => <View className="" />}
                         renderItem={({ item }) => (
-                            <Pressable className="rounded-2xl">
+                            <Pressable
+                                className="rounded-2xl"
+                                onPress={() => navigation.navigate("ChoreCreate", { choreId: item.id })}>
                                 <View className="flex-row items-center justify-between border-b border-text-light px-6 py-4">
                                     <View className="flex-row items-center flex-1">
                                         <CategoryIcon

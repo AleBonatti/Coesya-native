@@ -59,14 +59,14 @@ export function ChorePill({ item }: ChorePillProps) {
                 </View>
 
                 {/* STATO */}
-                <View className="w-10 h-10 rounded-full items-center justify-center bg-auth-form">
+                <View className="">
                     {isToggling ? (
                         <ActivityIndicator />
                     ) : (
                         <AppIcon
-                            name={item.is_completed ? "checkmark" : "ellipse-outline"}
-                            size={20}
-                            color="#121212"
+                            name={item.is_completed ? "checkmark-circle-outline" : "ellipse-outline"}
+                            size={24}
+                            color="#868686"
                         />
                     )}
                 </View>
