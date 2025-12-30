@@ -150,7 +150,7 @@ export function FamilyScreen() {
                                 isLoading={isUploadingPhoto}
                             />
                             <IconButton
-                                icon="more-horizontal"
+                                icon="ellipsis-horizontal"
                                 onPress={() => {}}
                             />
                         </View>
