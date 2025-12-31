@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { api, ApiError } from "../lib/api";
-import type { ActiveChore, ActiveChoresResponse, CompleteResponse, Chore, ChoresIndexResponse, CreateChoreRequest, CreateChoreResponse, UpdateChoreRequest, UpdateChoreResponse, DeleteChoreResponse } from "./choreTypes";
+import type { ActiveChore, ActiveChoresResponse, CompleteResponse, Chore, ChoresIndexResponse, ChoreCompletion, CompletedCompletionsResponse, CreateChoreRequest, CreateChoreResponse, UpdateChoreRequest, UpdateChoreResponse, DeleteChoreResponse } from "./choreTypes";
 
 type FieldErrors = Partial<Record<"title" | "frequency" | "category_id" | "weight" | "priority", string>>;
 interface ChoresState {
@@ -33,6 +33,13 @@ interface ChoresState {
     clearDeleteError: () => void;
     clearCreateFieldError: (field: keyof FieldErrors) => void;
     clearCreateError: () => void;
+
+    completedCompletions: ChoreCompletion[];
+    isLoadingCompleted: boolean;
+    completedError: string | null;
+
+    fetchCompleted: () => Promise<void>;
+    clearCompletedError: () => void;
 }
 
 export const useChoresStore = create<ChoresState>((set, get) => ({
@@ -54,6 +61,11 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
     deleteError: null,
     clearDeleteError: () => set({ deleteError: null }),
 
+    completedCompletions: [],
+    isLoadingCompleted: false,
+    completedError: null,
+    clearCompletedError: () => set({ completedError: null }),
+
     fetchActive: async () => {
         set({ isLoading: true, error: null });
         try {
@@ -62,6 +74,17 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
         } catch (e) {
             const msg = e instanceof ApiError ? e.message : "Errore nel caricamento degli impegni.";
             set({ isLoading: false, error: msg });
+        }
+    },
+
+    fetchCompleted: async () => {
+        set({ isLoadingCompleted: true, completedError: null });
+        try {
+            const res = await api.get<CompletedCompletionsResponse>("/chores/completed");
+            set({ completedCompletions: res.completions, isLoadingCompleted: false });
+        } catch (e) {
+            const msg = e instanceof ApiError ? e.message : "Errore nel caricamento dello storico.";
+            set({ isLoadingCompleted: false, completedError: msg });
         }
     },
 

@@ -45,6 +45,23 @@ export interface Chore {
     priority: number;
     category: Category;
 }
+export interface ChoreCompletion {
+    id: number;
+    chore_id: number;
+    family_id: number;
+    completed_by: number;
+    period_key: string | null;
+    completed_at: string; // "YYYY-MM-DD" nel tuo esempio
+
+    chore: Chore & {
+        category: Category | null;
+    };
+}
+
+export interface CompletedCompletionsResponse {
+    success: "ok";
+    completions: ChoreCompletion[];
+}
 
 export interface ChoresIndexResponse {
     success: "ok";
