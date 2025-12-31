@@ -3,7 +3,7 @@ import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
-import { ChorePill } from "../../../components/chores/ChorePill";
+import { ChoreCompletedPill } from "../../../components/chores/ChoreCompletedPill";
 import { ChoresStackParamList } from "../../../navigation/ChoresStack";
 import { useChoresStore } from "../../../chores/choreStore";
 import { AppShell } from "../../../components/layout/AppShell";
@@ -15,24 +15,18 @@ type Nav = NativeStackNavigationProp<ChoresStackParamList>;
 
 export function ChoresScreen() {
     const navigation = useNavigation<Nav>();
-    const chores = useChoresStore((s) => s.chores);
-    const isLoading = useChoresStore((s) => s.isLoading);
-    const error = useChoresStore((s) => s.error);
+    const completions = useChoresStore((s) => s.completedCompletions);
+    const isLoading = useChoresStore((s) => s.isLoadingCompleted);
+    const error = useChoresStore((s) => s.completedError);
 
-    const fetchActive = useChoresStore((s) => s.fetchActive);
+    const fetchCompleted = useChoresStore((s) => s.fetchCompleted);
     const clearError = useChoresStore((s) => s.clearError);
 
     useFocusEffect(
         useCallback(() => {
-            void fetchActive();
-        }, [fetchActive])
+            void fetchCompleted();
+        }, [fetchCompleted])
     );
-    /* useEffect(() => {
-        void fetchActive();
-    }, [fetchActive]); */
-
-    //const activeCount = chores.length;
-    //const doneCount = useMemo(() => chores.filter((c) => c.is_completed).length, [chores]);
 
     return (
         <AppShell showHeader={false}>
@@ -53,7 +47,7 @@ export function ChoresScreen() {
                         />
                         <IconButton
                             icon="list"
-                            onPress={() => void fetchActive()}
+                            onPress={() => void fetchCompleted()}
                         />
                         <IconButton
                             icon="refresh"
@@ -78,7 +72,7 @@ export function ChoresScreen() {
                     </View>
                 ) : (
                     <FlatList
-                        data={chores}
+                        data={completions}
                         keyExtractor={(item) => String(item.id)}
                         contentContainerStyle={{ paddingBottom: 110 }}
                         ItemSeparatorComponent={() => <View className="h-3" />}
@@ -92,7 +86,7 @@ export function ChoresScreen() {
                             />
                         }
                         renderItem={({ item }) => {
-                            return <ChorePill item={item} />;
+                            return <ChoreCompletedPill item={item} />;
                         }}
                         ListEmptyComponent={
                             <View>
