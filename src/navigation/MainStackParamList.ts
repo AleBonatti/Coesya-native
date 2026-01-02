@@ -6,11 +6,9 @@ export type MainStackParamList = {
     Dashboard: undefined;
     CreateFamily: undefined;
     JoinFamily: undefined;
-
     // family (con bottom menu)
     FamilyTabs: NavigatorScreenParams<FamilyTabsParamList>;
     FamilyDetail: { familyId: number };
-
     // Account (sempre accessibili)
     Profile: undefined;
     Notifications: undefined;
