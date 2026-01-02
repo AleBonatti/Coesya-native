@@ -74,84 +74,86 @@ export function ChorePill({ item, isOpen, onToggle, onClose }: ChorePillProps) {
     };
 
     return (
-        <Pressable
-            onPress={handlePillPress}
-            className="border rounded-2xl border-text-light overflow-hidden"
-            accessibilityRole="button"
-            accessibilityLabel="Azioni impegno">
-            <View className="flex-row px-3 py-2 items-center">
-                {/* ICONA CATEGORIA */}
-                <CategoryIcon
-                    category={item.category}
-                    is_completed={item.is_completed}
-                />
+        <View className="border rounded-2xl border-text-light overflow-hidden">
+            {/* ✅ MAIN TAP AREA */}
+            <Pressable
+                onPress={handlePillPress}
+                className="px-3 py-2"
+                accessibilityRole="button"
+                accessibilityLabel="Azioni impegno">
+                <View className="flex-row items-center">
+                    {/* ICONA CATEGORIA */}
+                    <CategoryIcon
+                        category={item.category}
+                        is_completed={item.is_completed}
+                    />
 
-                {/* TESTI */}
-                <View className="flex-1 pr-3">
-                    <AppText
-                        variant="placeholder"
-                        weight="medium"
-                        className="text-base">
-                        {item.title}
-                    </AppText>
-                    <View className="flex-row flex-wrap gap-1 items-center">
-                        <AppIcon
-                            name="time-outline"
-                            color="#868686"
-                            size={14}
-                        />
+                    {/* TESTI */}
+                    <View className="flex-1 pr-3">
                         <AppText
                             variant="placeholder"
-                            className="text-sm">
-                            {formatDue(item.due_at)}
+                            weight="medium"
+                            className="text-base">
+                            {item.title}
                         </AppText>
-                        {/* <AppText
+                        <View className="flex-row flex-wrap gap-1 items-center">
+                            <AppIcon
+                                name="time-outline"
+                                color="#868686"
+                                size={14}
+                            />
+                            <AppText
+                                variant="placeholder"
+                                className="text-sm">
+                                {formatDue(item.due_at)}
+                            </AppText>
+                            {/* <AppText
                             variant="placeholder"
                             className="text-sm">
                             - P{item.priority} · W{item.weight}
                         </AppText> */}
+                        </View>
                     </View>
                 </View>
-
-                {/* OVERLAY AZIONI (entra da destra, copre ~50%) */}
-                <Animated.View
-                    pointerEvents={isOpen ? "auto" : "none"}
-                    style={{
-                        position: "absolute",
-                        top: 0,
-                        bottom: 0,
-                        right: 0,
-                        width: OVERLAY_W,
-                        transform: [{ translateX: overlayTranslateX }],
-                    }}>
-                    {/* layer */}
-                    <View className="flex-1 bg-brand-primary flex-row">
-                        {/* Completa */}
-                        <Pressable
-                            onPress={() => void handleComplete()}
-                            disabled={isToggling}
-                            className="flex-1 items-center justify-center bg-brand-darker active:opacity-90"
-                            accessibilityRole="button"
-                            accessibilityLabel="Completa">
-                            <AppText className="text-white">Completa</AppText>
-                        </Pressable>
-                        {/* Edit */}
-                        <Pressable
-                            onPress={handleEdit}
-                            disabled={isToggling}
-                            className="w-14 items-center justify-center"
-                            accessibilityRole="button"
-                            accessibilityLabel="Modifica">
-                            <AppIcon
-                                name="settings-outline"
-                                size={20}
-                                color="#FFFFFF"
-                            />
-                        </Pressable>
-                    </View>
-                </Animated.View>
-            </View>
-        </Pressable>
+            </Pressable>
+            {/* OVERLAY AZIONI (entra da destra, copre ~50%) */}
+            <Animated.View
+                pointerEvents={isOpen ? "auto" : "none"}
+                style={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    width: OVERLAY_W,
+                    transform: [{ translateX: overlayTranslateX }],
+                }}>
+                {/* layer */}
+                <View className="flex-1 bg-brand-primary flex-row">
+                    {/* Completa */}
+                    <Pressable
+                        onPress={() => void handleComplete()}
+                        disabled={isToggling}
+                        className="flex-1 items-center justify-center bg-brand-darker active:opacity-90"
+                        accessibilityRole="button"
+                        accessibilityLabel="Completa">
+                        <AppText className="text-white">Completa</AppText>
+                    </Pressable>
+                    {/* Edit */}
+                    <Pressable
+                        onPress={handleEdit}
+                        disabled={isToggling}
+                        className="w-14 items-center justify-center"
+                        accessibilityRole="button"
+                        accessibilityLabel="Modifica">
+                        <AppIcon
+                            name="settings-outline"
+                            size={20}
+                            color="#FFFFFF"
+                        />
+                    </Pressable>
+                </View>
+            </Animated.View>
+        </View>
     );
 }
 
