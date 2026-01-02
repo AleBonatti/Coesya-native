@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { View, ActivityIndicator, FlatList, Pressable } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -32,6 +32,8 @@ export function FamilyHomeScreen() {
     const fetchActive = useChoresStore((s) => s.fetchActive);
     const clearError = useChoresStore((s) => s.clearError);
 
+    const [openChoreId, setOpenChoreId] = useState<number | null>(null);
+
     useFocusEffect(
         useCallback(() => {
             void fetchActive();
@@ -47,6 +49,11 @@ export function FamilyHomeScreen() {
             navigation.reset({ index: 0, routes: [{ name: "Dashboard" }] });
         }
     }, [user?.families?.length, navigation]);
+
+    // chiudi tutto quando la lista cambia (es. dopo complete)
+    useEffect(() => {
+        setOpenChoreId(null);
+    }, [pending.length]);
 
     return (
         <AppShell>
@@ -98,7 +105,14 @@ export function FamilyHomeScreen() {
                                 paddingBottom: tabBarHeight + 48, // 24 = margine extra “comodo”
                             }}
                             renderItem={({ item }) => {
-                                return <ChorePill item={item} />;
+                                return (
+                                    <ChorePill
+                                        item={item}
+                                        isOpen={openChoreId === item.id}
+                                        onToggle={() => setOpenChoreId((prev) => (prev === item.id ? null : item.id))}
+                                        onClose={() => setOpenChoreId(null)}
+                                    />
+                                );
                             }}
                             ListEmptyComponent={
                                 <View className="bg-auth-form rounded-xl p-5 mt-10">
