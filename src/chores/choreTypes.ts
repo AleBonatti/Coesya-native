@@ -14,24 +14,20 @@ export interface ActiveChore {
     due_at: string; // ISO string (end-exclusive o deadline)
     is_completed: boolean;
     completed_at?: string | null;
-    completed_by_user_id?: number | null;
+    completed_by?: number | null;
 
     category: Category;
 }
 
 export interface ActiveChoresResponse {
     success: "ok";
-    chores: ActiveChore[];
+    pending: ActiveChore[];
+    completions: ChoreCompletion[];
 }
 
 export interface CompleteResponse {
     success: "ok";
-    completion: {
-        chore_id: number;
-        period_key: string;
-        completed_at?: string | null;
-        completed_by_user_id?: number | null;
-    } | null;
+    completion: ChoreCompletion | null;
     period_key?: string;
 }
 

@@ -2,6 +2,7 @@ import React, { useEffect, useCallback } from "react";
 import { View, ActivityIndicator, FlatList, Pressable } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { useAuthStore } from "../../../auth/authStore";
 import { useChoresStore } from "../../../chores/choreStore";
@@ -13,15 +14,18 @@ import { getCurrentFamily, hasAnyFamily } from "../../../auth/authSelectors";
 import { Avatar } from "../../../components/ui/Avatar";
 import { IconButton } from "../../../components/ui/IconButton";
 import { ChorePill } from "../../../components/chores/ChorePill";
+import { ChoreCompletedPill } from "../../../components/chores/ChoreCompletedPill";
 import { LinkText } from "../../../components/ui/LinkText";
 
 type Nav = NativeStackNavigationProp<MainStackParamList>;
 
 export function FamilyHomeScreen() {
+    const tabBarHeight = useBottomTabBarHeight();
     const user = useAuthStore((s) => s.user);
     const navigation = useNavigation<Nav>();
 
-    const completions = useChoresStore((s) => s.chores);
+    const pending = useChoresStore((s) => s.pending);
+    const completions = useChoresStore((s) => s.completions);
     const isLoading = useChoresStore((s) => s.isLoading);
     const error = useChoresStore((s) => s.error);
 
@@ -46,10 +50,15 @@ export function FamilyHomeScreen() {
 
     return (
         <AppShell>
-            <View className="pt-6 gap-2">
-                {family ? (
+            {family ? (
+                isLoading ? (
+                    <View className="py-10 items-center justify-center">
+                        <ActivityIndicator />
+                        <AppText className="mt-3 text-text-main">Caricamento…</AppText>
+                    </View>
+                ) : (
                     <>
-                        <View className="w-full flex-row items-center justify-between">
+                        <View className="w-full flex-row items-center justify-between pt-4 pb-8">
                             <Avatar
                                 uri={family.profile_photo_url}
                                 name={family.name}
@@ -81,41 +90,59 @@ export function FamilyHomeScreen() {
                             </Pressable>
                         ) : null}
 
-                        {isLoading ? (
-                            <View className="py-10 items-center justify-center">
-                                <ActivityIndicator />
-                                <AppText className="mt-3 text-white/80">Caricamento…</AppText>
-                            </View>
-                        ) : (
-                            <FlatList
-                                data={completions}
-                                keyExtractor={(item) => String(item.id)}
-                                contentContainerStyle={{ paddingBottom: 110 }}
-                                ItemSeparatorComponent={() => <View className="h-3" />}
-                                renderItem={({ item }) => {
-                                    return <ChorePill item={item} />;
-                                }}
-                                ListEmptyComponent={
-                                    <View className="bg-auth-form rounded-xl p-5 mt-10">
-                                        <AppText>La tua famiglia non ha ancora impegni da completare. Sii il primo a dare inizio a momenti di collaborazione!</AppText>
-                                        <LinkText
-                                            onPress={() => {
-                                                navigation.navigate("FamilyTabs", {
-                                                    screen: "Chores",
-                                                });
-                                            }}
-                                            className="mt-10">
-                                            Clicca qui per creare il tuo primo impegno familiare.
-                                        </LinkText>
-                                    </View>
-                                }
-                            />
-                        )}
+                        <FlatList
+                            data={pending}
+                            keyExtractor={(item) => String(item.id)}
+                            ItemSeparatorComponent={() => <View className="h-3" />}
+                            contentContainerStyle={{
+                                paddingBottom: tabBarHeight + 48, // 24 = margine extra “comodo”
+                            }}
+                            renderItem={({ item }) => {
+                                return <ChorePill item={item} />;
+                            }}
+                            ListEmptyComponent={
+                                <View className="bg-auth-form rounded-xl p-5 mt-10">
+                                    <AppText>La tua famiglia non ha ancora impegni da completare. Sii il primo a dare inizio a momenti di collaborazione!</AppText>
+                                    <LinkText
+                                        onPress={() => {
+                                            navigation.navigate("FamilyTabs", {
+                                                screen: "Chores",
+                                            });
+                                        }}
+                                        className="mt-10">
+                                        Clicca qui per creare il tuo primo impegno familiare.
+                                    </LinkText>
+                                </View>
+                            }
+                            ListFooterComponent={
+                                <View className="mt-8 gap-3">
+                                    <AppText
+                                        weight="medium"
+                                        className="text-base">
+                                        Ultimi completati
+                                    </AppText>
+                                    {completions.length === 0 ? (
+                                        <View className="bg-auth-form rounded-xl p-5 mt-2 items-center">
+                                            <AppText variant="placeholder">Nessun impegno completato</AppText>
+                                        </View>
+                                    ) : (
+                                        <View className="gap-3">
+                                            {completions.map((c) => (
+                                                <ChoreCompletedPill
+                                                    key={c.id}
+                                                    item={c}
+                                                />
+                                            ))}
+                                        </View>
+                                    )}
+                                </View>
+                            }
+                        />
                     </>
-                ) : (
-                    <AppText>Nessuna famiglia attiva trovata.</AppText>
-                )}
-            </View>
+                )
+            ) : (
+                <AppText>Nessuna famiglia attiva trovata.</AppText>
+            )}
         </AppShell>
     );
 }

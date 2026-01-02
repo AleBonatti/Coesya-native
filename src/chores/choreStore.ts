@@ -4,7 +4,8 @@ import type { ActiveChore, ActiveChoresResponse, CompleteResponse, Chore, Chores
 
 type FieldErrors = Partial<Record<"title" | "frequency" | "category_id" | "weight" | "priority", string>>;
 interface ChoresState {
-    chores: ActiveChore[];
+    pending: ActiveChore[];
+    completions: ChoreCompletion[];
     isLoading: boolean;
     error: string | null;
 
@@ -43,7 +44,8 @@ interface ChoresState {
 }
 
 export const useChoresStore = create<ChoresState>((set, get) => ({
-    chores: [],
+    pending: [],
+    completions: [],
     isLoading: false,
     error: null,
     togglingIds: {},
@@ -70,7 +72,7 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const res = await api.get<ActiveChoresResponse>("/chores/active");
-            set({ chores: res.chores, isLoading: false });
+            set({ pending: res.pending, completions: res.completions, isLoading: false });
         } catch (e) {
             const msg = e instanceof ApiError ? e.message : "Errore nel caricamento degli impegni.";
             set({ isLoading: false, error: msg });
@@ -90,66 +92,89 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
 
     toggleComplete: async (choreId: number) => {
         const state = get();
-        const current = state.chores.find((c) => c.id === choreId);
+        const current = state.pending.find((c) => c.id === choreId);
         if (!current) return;
 
-        // optimistic update
+        // Qui, visto che pending contiene solo "da completare",
+        // il click in pratica significa "complete".
+        // Però mantengo la logica generica nel caso tu in futuro
+        // mostri anche completed nella stessa lista.
         const nextCompleted = !current.is_completed;
 
+        // loader per riga
         set({
             togglingIds: { ...state.togglingIds, [choreId]: true },
-            chores: state.chores.map((c) =>
-                c.id === choreId
-                    ? {
-                          ...c,
-                          is_completed: nextCompleted,
-                          // se stai marcando completo, metto un timestamp locale "provvisorio"
-                          completed_at: nextCompleted ? new Date().toISOString() : null,
-                      }
-                    : c
-            ),
         });
 
         try {
             if (nextCompleted) {
                 const res = await api.post<CompleteResponse>(`/chores/${choreId}/complete`, {});
-                // allineo con server (period_key / completed_at)
-                set((s) => ({
-                    chores: s.chores.map((c) =>
-                        c.id === choreId
-                            ? {
-                                  ...c,
-                                  is_completed: true,
-                                  period_key: res.completion?.period_key ?? c.period_key,
-                                  completed_at: res.completion?.completed_at ?? c.completed_at,
-                                  completed_by_user_id: res.completion?.completed_by_user_id ?? c.completed_by_user_id,
-                              }
-                            : c
-                    ),
-                }));
+
+                if (!res.completion) {
+                    // se il backend risponde ok ma senza completion, per sicurezza non sposto nulla
+                    throw new ApiError("Risposta non valida: completion mancante.", 500);
+                }
+
+                const completion = res.completion;
+
+                set((s) => {
+                    // 1) rimuovi dalla lista pending
+                    const nextPending = s.pending.filter((c) => c.id !== choreId);
+
+                    // 2) prepend nei completati e mantieni max 3
+                    const nextCompletions = [completion, ...s.completions].slice(0, 3);
+
+                    return {
+                        pending: nextPending,
+                        completions: nextCompletions,
+                    };
+                });
             } else {
-                //const res = await api.del<CompleteResponse>(`/chores/${choreId}/complete`);
+                // UNCOMPLETE (se mai ti capiterà di chiamarlo su un item "completed")
                 const res = await api.post<CompleteResponse>(`/chores/${choreId}/uncomplete`, {});
-                set((s) => ({
-                    chores: s.chores.map((c) =>
-                        c.id === choreId
-                            ? {
-                                  ...c,
-                                  is_completed: false,
-                                  period_key: res.period_key ?? c.period_key,
-                                  completed_at: null,
-                                  completed_by_user_id: null,
-                              }
-                            : c
-                    ),
-                }));
+
+                set((s) => {
+                    const restored: ActiveChore = {
+                        ...current,
+                        is_completed: false,
+                        completed_at: null,
+                        completed_by: null,
+                        // il backend può mandare un period_key aggiornato; se non c'è, tengo il suo
+                        period_key: res.period_key ?? current.period_key,
+                    };
+
+                    // 1) reinserisci in pending (poi ordina)
+                    const pendingUnsorted = [restored, ...s.pending];
+
+                    // Ordine coerente con backend: priority desc, weight desc, title asc
+                    const nextPending = [...pendingUnsorted].sort((a, b) => {
+                        if (a.priority !== b.priority) return b.priority - a.priority;
+                        if (a.weight !== b.weight) return b.weight - a.weight;
+                        return a.title.localeCompare(b.title);
+                    });
+
+                    // 2) rimuovi dalla lista completions il record relativo a questo chore/periodo
+                    // Nel tuo modello, period_key di ActiveChore è string, mentre nella completion può essere null.
+                    const pk = restored.period_key;
+                    const nextCompletions = s.completions.filter((c) => {
+                        if (c.chore_id !== choreId) return true;
+                        // se la completion ha period_key valorizzata, matcha per period_key
+                        if (c.period_key != null) return c.period_key !== pk;
+                        // se fosse null (caso raro), lo togliamo comunque per chore_id
+                        return false;
+                    });
+
+                    return {
+                        pending: nextPending,
+                        completions: nextCompletions,
+                    };
+                });
             }
         } catch (e) {
-            // rollback
-            set((s) => ({
-                chores: s.chores.map((c) => (c.id === choreId ? current : c)),
+            // rollback: siccome spostiamo solo a success, qui basta settare errore
+            set({
                 error: e instanceof ApiError ? e.message : "Operazione non riuscita. Riprova.",
-            }));
+            });
         } finally {
             set((s) => {
                 const { [choreId]: _removed, ...rest } = s.togglingIds;
