@@ -25,3 +25,15 @@ export interface UploadFamilyPhotoResponse {
     success: "ok";
     family: Family;
 }
+export interface FamilyMember {
+    id: number;
+    firstname: string;
+    lastname: string;
+    email: string | null;
+    profile_photo_url?: string | null;
+    profile_photo_path?: string | null;
+}
+export interface FamilyMembersResponse {
+    success: "ok";
+    members: FamilyMember[];
+}

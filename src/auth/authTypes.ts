@@ -1,8 +1,10 @@
 export interface User {
-    id: string;
+    id: number;
     firstname: string;
     lastname: string;
     email: string;
+    profile_photo_path: string | null;
+    profile_photo_url: string;
     families: Family[];
 }
 export interface FamilyPivot {
