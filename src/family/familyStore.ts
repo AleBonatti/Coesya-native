@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 import { create } from "zustand";
 import { api, ApiError } from "../lib/api";
-import type { CreateFamilyRequest, CreateFamilyResponse, Family, UpdateFamilyRequest, UpdateFamilyResponse, UploadFamilyPhotoResponse } from "./familyTypes";
+import type { CreateFamilyRequest, CreateFamilyResponse, Family, UpdateFamilyRequest, UpdateFamilyResponse, UploadFamilyPhotoResponse, FamilyMember, FamilyMembersResponse } from "./familyTypes";
 // familyStore.ts
 import type * as ImagePicker from "expo-image-picker";
 
@@ -20,6 +20,13 @@ interface FamilyState {
 
     uploadFamilyPhoto: (familyId: number, asset: ImagePicker.ImagePickerAsset) => Promise<Family>;
 
+    members: FamilyMember[];
+    isLoadingMembers: boolean;
+    membersError: string | null;
+
+    fetchMembers: (familyId: number) => Promise<void>;
+    clearMembersError: () => void;
+
     clearFieldError: (field: keyof FamilyFieldErrorMap) => void;
     clearFormError: () => void;
 }
@@ -30,6 +37,12 @@ export const useFamilyStore = create<FamilyState>((set) => ({
     isUploadingPhoto: false,
     formError: null,
     fieldErrors: {},
+
+    members: [],
+    isLoadingMembers: false,
+    membersError: null,
+
+    clearMembersError: () => set({ membersError: null }),
 
     clearFormError: () => set({ formError: null }),
 
@@ -176,6 +189,17 @@ export const useFamilyStore = create<FamilyState>((set) => ({
             });
 
             throw e;
+        }
+    },
+
+    fetchMembers: async (familyId: number) => {
+        set({ isLoadingMembers: true, membersError: null });
+        try {
+            const res = await api.get<FamilyMembersResponse>(`/family/${familyId}/members`);
+            set({ members: res.members, isLoadingMembers: false });
+        } catch (e) {
+            const msg = e instanceof ApiError ? e.message : "Errore nel caricamento dei membri.";
+            set({ isLoadingMembers: false, membersError: msg });
         }
     },
 }));

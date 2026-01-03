@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { View, ImageBackground, Pressable } from "react-native";
+import { View, ImageBackground, ScrollView, ActivityIndicator, Pressable } from "react-native";
 import { useDebounce } from "../../../hooks/useDebounce";
 import * as ImagePicker from "expo-image-picker";
 import { AppShell } from "../../../components/layout/AppShell";
@@ -9,6 +9,8 @@ import { getCurrentFamily } from "../../../auth/authSelectors";
 import { TextField } from "../../../components/ui/TextField";
 import { IconButton } from "../../../components/ui/IconButton";
 import { Button } from "../../../components/ui/Button";
+import { AppText } from "../../../components/ui/AppText";
+import { Avatar } from "../../../components/ui/Avatar";
 
 export function FamilyScreen() {
     const user = useAuthStore((s) => s.user);
@@ -121,6 +123,17 @@ export function FamilyScreen() {
         }
     };
 
+    const members = useFamilyStore((s) => s.members);
+    const isLoadingMembers = useFamilyStore((s) => s.isLoadingMembers);
+    const membersError = useFamilyStore((s) => s.membersError);
+    const fetchMembers = useFamilyStore((s) => s.fetchMembers);
+    const clearMembersError = useFamilyStore((s) => s.clearMembersError);
+
+    useEffect(() => {
+        if (!familyId) return;
+        void fetchMembers(familyId);
+    }, [familyId, fetchMembers]);
+
     return (
         <AppShell
             padded={false}
@@ -159,28 +172,84 @@ export function FamilyScreen() {
 
                 {/* BOTTOM — sheet */}
                 <View className="flex-[3] bg-white rounded-t-3xl px-6 pt-6">
-                    <View>
-                        <TextField
-                            label="Nome famiglia"
-                            value={name}
-                            onChangeText={setName}
-                            placeholder="Nome famiglia"
-                            isLoading={showNameSpinner}
-                            error={fieldErrors.name}
+                    <ScrollView
+                        contentContainerStyle={{ paddingBottom: 24 }}
+                        showsVerticalScrollIndicator={false}>
+                        <View>
+                            <TextField
+                                label="Nome famiglia"
+                                value={name}
+                                onChangeText={setName}
+                                placeholder="Nome famiglia"
+                                isLoading={showNameSpinner}
+                                error={fieldErrors.name}
+                            />
+                            <TextField
+                                label="Codice famiglia vicina"
+                                value={code}
+                                editable={false}
+                                placeholder="—"
+                            />
+                        </View>
+                        <Button
+                            variant="tertiary"
+                            size="sm"
+                            title="Genera codice invito"
+                            onPress={() => {}}
                         />
-                        <TextField
-                            label="Codice famiglia vicina"
-                            value={code}
-                            editable={false}
-                            placeholder="—"
-                        />
-                    </View>
-                    <Button
-                        variant="tertiary"
-                        size="sm"
-                        title="Genera codice invito"
-                        onPress={() => {}}
-                    />
+
+                        {/* ✅ MEMBRI */}
+                        <View className="mt-6">
+                            {membersError ? (
+                                <Pressable
+                                    onPress={() => clearMembersError()}
+                                    className="mt-3 rounded-xl bg-red-500/15 px-4 py-3">
+                                    <AppText
+                                        weight="semibold"
+                                        className="text-text-main">
+                                        Errore
+                                    </AppText>
+                                    <AppText className="text-text-main/80 mt-1">{membersError}</AppText>
+                                    <AppText className="text-text-main/60 mt-2">Tocca per chiudere</AppText>
+                                </Pressable>
+                            ) : null}
+
+                            {isLoadingMembers ? (
+                                <View className="py-6 items-center">
+                                    <ActivityIndicator />
+                                    <AppText className="mt-2 text-text-main/70">Caricamento membri…</AppText>
+                                </View>
+                            ) : members.length === 0 ? (
+                                <View className="mt-3 rounded-xl bg-black/5 px-4 py-4">
+                                    <AppText className="text-text-main/70">Nessun membro trovato.</AppText>
+                                </View>
+                            ) : (
+                                <View className="mt-3 gap-2">
+                                    {members.map((m) => (
+                                        <View
+                                            key={m.id}
+                                            className="flex-row items-center justify-between rounded-2xl bg-black/5 px-4 py-3">
+                                            <View className="flex-row items-center gap-3 flex-1 pr-3">
+                                                <Avatar
+                                                    uri={m.profile_photo_url ?? undefined}
+                                                    name={`${m.firstname} ${m.lastname}`}
+                                                    size={40}
+                                                />
+                                                <View className="flex-1">
+                                                    <AppText
+                                                        weight="medium"
+                                                        className="text-text-main">
+                                                        {`${m.firstname} ${m.lastname}`}
+                                                    </AppText>
+                                                    {m.email ? <AppText className="text-text-main/60">{m.email}</AppText> : null}
+                                                </View>
+                                            </View>
+                                        </View>
+                                    ))}
+                                </View>
+                            )}
+                        </View>
+                    </ScrollView>
                 </View>
             </View>
         </AppShell>
