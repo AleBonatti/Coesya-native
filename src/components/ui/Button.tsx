@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, Text } from "react-native";
 
-type ButtonVariant = "primary" | "secondary" | "tertiary" | "dark" | "ghost" | "danger";
+type ButtonVariant = "primary" | "secondary" | "tertiary" | "dark" | "ghost" | "danger" | "white";
 type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps {
@@ -27,8 +27,9 @@ export function Button({ title, onPress, variant = "primary", size = "md", class
         secondary: "bg-brand-accent",
         tertiary: "bg-brand-tertiary",
         dark: "bg-brand-darker",
-        ghost: "bg-transparent border border-brand-primary",
+        ghost: "bg-transparent border border-white",
         danger: "bg-red-600",
+        white: "bg-white",
     };
 
     const disabledStyles = disabled ? "opacity-50" : "";
@@ -38,8 +39,9 @@ export function Button({ title, onPress, variant = "primary", size = "md", class
         secondary: "font-sansSemibold text-white",
         tertiary: "font-sansMedium text-white",
         dark: "text-white",
-        ghost: "text-121212",
+        ghost: "font-sansSemibold text-white",
         danger: "text-white",
+        white: "text-brand-tertiary",
     };
 
     const textSize = "text-base";
