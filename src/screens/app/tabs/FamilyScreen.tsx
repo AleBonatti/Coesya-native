@@ -171,12 +171,13 @@ export function FamilyScreen() {
                 </View>
 
                 {/* BOTTOM — sheet */}
-                <View className="flex-[3] bg-white rounded-t-3xl px-6 pt-6">
+                <View className="flex-[3] bg-auth-bg rounded-t-3xl pt-6">
                     <ScrollView
                         contentContainerStyle={{ paddingBottom: 24 }}
                         showsVerticalScrollIndicator={false}>
-                        <View>
+                        <View className="px-6">
                             <TextField
+                                variant="dark"
                                 label="Nome famiglia"
                                 value={name}
                                 onChangeText={setName}
@@ -185,21 +186,16 @@ export function FamilyScreen() {
                                 error={fieldErrors.name}
                             />
                             <TextField
+                                variant="dark"
                                 label="Codice famiglia vicina"
                                 value={code}
                                 editable={false}
                                 placeholder="—"
                             />
                         </View>
-                        <Button
-                            variant="tertiary"
-                            size="sm"
-                            title="Genera codice invito"
-                            onPress={() => {}}
-                        />
 
                         {/* ✅ MEMBRI */}
-                        <View className="mt-6">
+                        <View className="mb-6">
                             {membersError ? (
                                 <Pressable
                                     onPress={() => clearMembersError()}
@@ -220,15 +216,15 @@ export function FamilyScreen() {
                                     <AppText className="mt-2 text-text-main/70">Caricamento membri…</AppText>
                                 </View>
                             ) : members.length === 0 ? (
-                                <View className="mt-3 rounded-xl bg-black/5 px-4 py-4">
-                                    <AppText className="text-text-main/70">Nessun membro trovato.</AppText>
+                                <View className="mt-3 rounded-xl px-4 py-4">
+                                    <AppText>Nessun membro trovato.</AppText>
                                 </View>
                             ) : (
                                 <View className="mt-3 gap-2">
                                     {members.map((m) => (
                                         <View
                                             key={m.id}
-                                            className="flex-row items-center justify-between rounded-2xl bg-black/5 px-4 py-3">
+                                            className="flex-row items-center justify-between border-b border-auth-form px-6 py-3">
                                             <View className="flex-row items-center gap-3 flex-1 pr-3">
                                                 <Avatar
                                                     uri={m.profile_photo_url ?? undefined}
@@ -248,6 +244,16 @@ export function FamilyScreen() {
                                     ))}
                                 </View>
                             )}
+                        </View>
+
+                        {/* ✅ PULSANTE GENERAZIONE CODICE */}
+                        <View className="px-6">
+                            <Button
+                                variant="tertiary"
+                                size="sm"
+                                title="Genera codice invito"
+                                onPress={() => {}}
+                            />
                         </View>
                     </ScrollView>
                 </View>
