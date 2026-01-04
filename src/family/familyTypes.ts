@@ -37,3 +37,6 @@ export interface FamilyMembersResponse {
     success: "ok";
     members: FamilyMember[];
 }
+export interface SaveFamilyCodeResponse {
+    success: "ok";
+}

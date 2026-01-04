@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 import { create } from "zustand";
 import { api, ApiError } from "../lib/api";
-import type { CreateFamilyRequest, CreateFamilyResponse, Family, UpdateFamilyRequest, UpdateFamilyResponse, UploadFamilyPhotoResponse, FamilyMember, FamilyMembersResponse } from "./familyTypes";
+import type { CreateFamilyRequest, CreateFamilyResponse, Family, UpdateFamilyRequest, UpdateFamilyResponse, UploadFamilyPhotoResponse, FamilyMember, FamilyMembersResponse, SaveFamilyCodeResponse } from "./familyTypes";
 // familyStore.ts
 import type * as ImagePicker from "expo-image-picker";
 
@@ -29,6 +29,11 @@ interface FamilyState {
 
     clearFieldError: (field: keyof FamilyFieldErrorMap) => void;
     clearFormError: () => void;
+
+    isSavingInviteCode: boolean;
+    inviteCodeError: string | null;
+    saveInviteCode: (familyId: number, code: string) => Promise<void>;
+    clearInviteCodeError: () => void;
 }
 
 export const useFamilyStore = create<FamilyState>((set) => ({
@@ -52,6 +57,10 @@ export const useFamilyStore = create<FamilyState>((set) => ({
             const { [field]: _removed, ...rest } = state.fieldErrors;
             return { fieldErrors: rest };
         }),
+
+    isSavingInviteCode: false,
+    inviteCodeError: null,
+    clearInviteCodeError: () => set({ inviteCodeError: null }),
 
     createFamily: async (data) => {
         set({ isCreating: true, formError: null, fieldErrors: {} });
@@ -200,6 +209,20 @@ export const useFamilyStore = create<FamilyState>((set) => ({
         } catch (e) {
             const msg = e instanceof ApiError ? e.message : "Errore nel caricamento dei membri.";
             set({ isLoadingMembers: false, membersError: msg });
+        }
+    },
+
+    saveInviteCode: async (familyId, code) => {
+        set({ isSavingInviteCode: true, inviteCodeError: null });
+        try {
+            await api.post<SaveFamilyCodeResponse>(`/family/${familyId}/code`, {
+                code,
+            });
+            set({ isSavingInviteCode: false });
+        } catch (e) {
+            const msg = e instanceof ApiError ? e.message : "Errore nel salvataggio del codice invito.";
+            set({ isSavingInviteCode: false, inviteCodeError: msg });
+            throw e;
         }
     },
 }));

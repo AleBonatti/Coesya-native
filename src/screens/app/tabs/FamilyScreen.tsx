@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { View, ImageBackground, ScrollView, ActivityIndicator, Pressable } from "react-native";
+import { Modal, Animated, Dimensions, View, ImageBackground, ScrollView, ActivityIndicator, Pressable } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import * as Clipboard from "expo-clipboard";
 import { useDebounce } from "../../../hooks/useDebounce";
 import * as ImagePicker from "expo-image-picker";
 import { AppShell } from "../../../components/layout/AppShell";
@@ -31,6 +33,93 @@ export function FamilyScreen() {
 
     const uploadFamilyPhoto = useFamilyStore((s) => s.uploadFamilyPhoto);
     const isUploadingPhoto = useFamilyStore((s) => s.isUploadingPhoto);
+
+    const members = useFamilyStore((s) => s.members);
+    const isLoadingMembers = useFamilyStore((s) => s.isLoadingMembers);
+    const membersError = useFamilyStore((s) => s.membersError);
+    const fetchMembers = useFamilyStore((s) => s.fetchMembers);
+    const clearMembersError = useFamilyStore((s) => s.clearMembersError);
+
+    // layer codice
+    const [isReadyToShowSheet, setIsReadyToShowSheet] = useState(false);
+    const didAnimateOpenRef = useRef(false);
+    const [sheetHeight, setSheetHeight] = useState(0);
+    const [inviteOpen, setInviteOpen] = useState(false);
+    const [inviteCode, setInviteCode] = useState<string>("");
+    const slideY = useRef(new Animated.Value(0)).current;
+    const backdropOpacity = useRef(new Animated.Value(0)).current;
+
+    const isSavingInviteCode = useFamilyStore((s) => s.isSavingInviteCode);
+    const inviteCodeError = useFamilyStore((s) => s.inviteCodeError);
+    const saveInviteCode = useFamilyStore((s) => s.saveInviteCode);
+    const clearInviteCodeError = useFamilyStore((s) => s.clearInviteCodeError);
+
+    function generate5Digits(): string {
+        const n = Math.floor(10000 + Math.random() * 90000);
+        return String(n);
+    }
+
+    const openInvite = () => {
+        if (!familyId) return;
+
+        clearInviteCodeError();
+        const newCode = generate5Digits();
+        setInviteCode(newCode);
+
+        // reset gating
+        setSheetHeight(0);
+        setIsReadyToShowSheet(false);
+        didAnimateOpenRef.current = false;
+
+        setInviteOpen(true);
+
+        void saveInviteCode(familyId, newCode);
+    };
+
+    const closeInvite = () => {
+        const endY = sheetHeight > 0 ? sheetHeight : 300;
+
+        Animated.parallel([
+            Animated.timing(slideY, {
+                toValue: endY,
+                duration: 180,
+                useNativeDriver: true,
+            }),
+            Animated.timing(backdropOpacity, {
+                toValue: 0,
+                duration: 180,
+                useNativeDriver: true,
+            }),
+        ]).start(({ finished }) => {
+            if (finished) setInviteOpen(false);
+        });
+    };
+
+    useEffect(() => {
+        if (!inviteOpen) return;
+        if (!isReadyToShowSheet) return;
+        if (didAnimateOpenRef.current) return;
+
+        didAnimateOpenRef.current = true;
+
+        slideY.setValue(sheetHeight);
+        backdropOpacity.setValue(0);
+
+        Animated.parallel([Animated.timing(slideY, { toValue: 0, duration: 220, useNativeDriver: true }), Animated.timing(backdropOpacity, { toValue: 1, duration: 220, useNativeDriver: true })]).start();
+    }, [inviteOpen, isReadyToShowSheet, sheetHeight, slideY, backdropOpacity]);
+
+    useEffect(() => {
+        if (!inviteOpen) return;
+        if (sheetHeight <= 0) return;
+
+        setIsReadyToShowSheet(true);
+    }, [inviteOpen, sheetHeight]);
+
+    const copyInviteCode = async () => {
+        if (!inviteCode) return;
+        await Clipboard.setStringAsync(inviteCode);
+        // opzionale: toast/snackbar in futuro
+    };
 
     // sync quando cambia family (es. refreshMe)
     useEffect(() => {
@@ -123,12 +212,6 @@ export function FamilyScreen() {
         }
     };
 
-    const members = useFamilyStore((s) => s.members);
-    const isLoadingMembers = useFamilyStore((s) => s.isLoadingMembers);
-    const membersError = useFamilyStore((s) => s.membersError);
-    const fetchMembers = useFamilyStore((s) => s.fetchMembers);
-    const clearMembersError = useFamilyStore((s) => s.clearMembersError);
-
     useEffect(() => {
         if (!familyId) return;
         void fetchMembers(familyId);
@@ -193,7 +276,6 @@ export function FamilyScreen() {
                                 placeholder="—"
                             />
                         </View>
-
                         {/* ✅ MEMBRI */}
                         <View className="mb-6">
                             {membersError ? (
@@ -245,19 +327,144 @@ export function FamilyScreen() {
                                 </View>
                             )}
                         </View>
-
                         {/* ✅ PULSANTE GENERAZIONE CODICE */}
                         <View className="px-6">
                             <Button
                                 variant="tertiary"
                                 size="sm"
                                 title="Genera codice invito"
-                                onPress={() => {}}
+                                onPress={openInvite}
                             />
                         </View>
                     </ScrollView>
                 </View>
             </View>
+
+            <Modal
+                visible={inviteOpen}
+                transparent
+                animationType="none"
+                onRequestClose={closeInvite}>
+                {/* Backdrop */}
+                <Pressable
+                    onPress={closeInvite}
+                    style={{ flex: 1 }}>
+                    <Animated.View
+                        style={{
+                            flex: 1,
+                            opacity: backdropOpacity,
+                            backgroundColor: "rgba(0,0,0,0.35)",
+                        }}
+                    />
+                </Pressable>
+
+                {/* 1) MISURATORE INVISIBILE (solo per calcolare altezza) */}
+                {sheetHeight === 0 ? (
+                    <View
+                        style={{
+                            position: "absolute",
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            opacity: 0, // invisibile
+                        }}
+                        onLayout={(e) => {
+                            const h = e.nativeEvent.layout.height;
+                            if (h > 0) setSheetHeight(h);
+                        }}>
+                        <InviteSheetContent
+                            inviteCode={inviteCode}
+                            isSavingInviteCode={isSavingInviteCode}
+                            inviteCodeError={inviteCodeError}
+                            clearInviteCodeError={clearInviteCodeError}
+                            copyInviteCode={copyInviteCode}
+                        />
+                    </View>
+                ) : null}
+
+                {/* 2) SHEET REALE (solo quando ready) */}
+                {isReadyToShowSheet ? (
+                    <Animated.View
+                        style={{
+                            position: "absolute",
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            transform: [{ translateY: slideY }],
+                        }}>
+                        <InviteSheetContent
+                            inviteCode={inviteCode}
+                            isSavingInviteCode={isSavingInviteCode}
+                            inviteCodeError={inviteCodeError}
+                            clearInviteCodeError={clearInviteCodeError}
+                            copyInviteCode={copyInviteCode}
+                        />
+                    </Animated.View>
+                ) : null}
+            </Modal>
         </AppShell>
+    );
+}
+
+function InviteSheetContent(props: { inviteCode: string; isSavingInviteCode: boolean; inviteCodeError: string | null; clearInviteCodeError: () => void; copyInviteCode: () => Promise<void> }) {
+    const { inviteCode, isSavingInviteCode, inviteCodeError, clearInviteCodeError, copyInviteCode } = props;
+
+    return (
+        <LinearGradient
+            colors={["#FFA500", "#F06000"]}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+            style={{
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
+                paddingHorizontal: 24,
+                paddingTop: 24,
+                paddingBottom: 24,
+            }}>
+            <View className="items-center mb-4">
+                <View className="w-12 h-1.5 rounded-full bg-white/30" />
+            </View>
+
+            <AppText
+                weight="medium"
+                className="text-xl text-white">
+                Codice invito
+            </AppText>
+
+            <AppText className="mt-2 text-text-main">Condividi questo codice con chi vuoi invitare a unirsi alla tua famiglia Coesya.</AppText>
+
+            <View className="mt-4 rounded-2xl py-4 items-center">
+                <AppText className="text-4xl text-text-main">{inviteCode || "— — — — —"}</AppText>
+
+                {isSavingInviteCode ? (
+                    <View className="mt-3 flex-row items-center gap-2">
+                        <ActivityIndicator />
+                        <AppText className="text-text-main/60">Salvataggio…</AppText>
+                    </View>
+                ) : null}
+
+                {inviteCodeError ? (
+                    <Pressable
+                        onPress={clearInviteCodeError}
+                        className="mt-3">
+                        <AppText className="text-red-300">{inviteCodeError} (tocca per chiudere)</AppText>
+                    </Pressable>
+                ) : null}
+            </View>
+
+            <View className="mt-5 gap-3">
+                <Button
+                    variant="white"
+                    title="Copia codice"
+                    onPress={() => void copyInviteCode()}
+                    disabled={!inviteCode}
+                />
+                <Button
+                    variant="ghost"
+                    title="Condividi codice"
+                    onPress={() => {}}
+                />
+            </View>
+        </LinearGradient>
     );
 }
