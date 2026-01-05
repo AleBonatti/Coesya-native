@@ -1,6 +1,7 @@
 export interface Family {
     id: number;
     name: string;
+    slug: string;
     code: string;
     profile_photo_path?: string | null;
     profile_photo_url?: string | null;
@@ -29,6 +30,7 @@ export interface FamilyMember {
     id: number;
     firstname: string;
     lastname: string;
+    nickname: string;
     email: string | null;
     profile_photo_url?: string | null;
     profile_photo_path?: string | null;

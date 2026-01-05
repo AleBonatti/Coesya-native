@@ -32,7 +32,7 @@ interface FamilyState {
 
     isSavingInviteCode: boolean;
     inviteCodeError: string | null;
-    saveInviteCode: (familyId: number, code: string) => Promise<void>;
+    saveInviteCode: (familyId: number) => Promise<void>;
     clearInviteCodeError: () => void;
 }
 
@@ -212,12 +212,10 @@ export const useFamilyStore = create<FamilyState>((set) => ({
         }
     },
 
-    saveInviteCode: async (familyId, code) => {
+    saveInviteCode: async (familyId) => {
         set({ isSavingInviteCode: true, inviteCodeError: null });
         try {
-            await api.post<SaveFamilyCodeResponse>(`/family/${familyId}/code`, {
-                code,
-            });
+            await api.post<SaveFamilyCodeResponse>(`/family/${familyId}/code`, {});
             set({ isSavingInviteCode: false });
         } catch (e) {
             const msg = e instanceof ApiError ? e.message : "Errore nel salvataggio del codice invito.";
