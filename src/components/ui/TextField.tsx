@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, Platform, TextInput, TextInputProps, ActivityIndicator } from "react-native";
 
 export type InputVariant = "primary" | "dark";
@@ -19,8 +19,6 @@ const variantClasses: Record<InputVariant, string> = {
 };
 
 export function TextField({ label, size = "md", variant = "primary", error, className = "", isLoading = false, ...props }: TextFieldProps) {
-    const [isFocused, setIsFocused] = useState(false);
-
     const sizeStyles: Record<TextFieldSize, string> = {
         sm: "px-3 py-2 text-sm",
         md: "px-6 py-4 text-base",
@@ -45,11 +43,11 @@ export function TextField({ label, size = "md", variant = "primary", error, clas
                 <TextInput
                     {...props}
                     onFocus={(e) => {
-                        setIsFocused(true);
+                        //setIsFocused(true);
                         props.onFocus?.(e);
                     }}
                     onBlur={(e) => {
-                        setIsFocused(false);
+                        //setIsFocused(false);
                         props.onBlur?.(e);
                     }}
                     placeholderTextColor="#868686"

@@ -2,6 +2,7 @@ export interface User {
     id: number;
     firstname: string;
     lastname: string;
+    nickname: string;
     email: string;
     profile_photo_path: string | null;
     profile_photo_url: string;
@@ -37,6 +38,7 @@ export interface LoginResponse {
 export interface RegisterRequest {
     firstname: string;
     lastname: string;
+    nickname: string;
     email: string;
     password: string;
     password_confirmation: string;

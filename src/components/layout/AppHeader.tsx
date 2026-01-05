@@ -1,7 +1,7 @@
-import React, { use } from "react";
+import React from "react";
 import { Image, Pressable, View } from "react-native";
 import { AppIcon } from "../../components/ui/AppIcon";
-import { DrawerActions, useNavigation, type NavigationProp } from "@react-navigation/native";
+import { DrawerActions, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { MainStackParamList } from "../../navigation/MainStackParamList";
 import { useAuthStore } from "../../auth/authStore";

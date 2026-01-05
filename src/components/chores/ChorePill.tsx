@@ -1,12 +1,12 @@
 // components/chores/ChorePill.tsx
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { View, ActivityIndicator, Animated, Pressable } from "react-native";
+import React, { useEffect, useMemo, useRef } from "react";
+import { View, Animated, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { AppIcon } from "../../components/ui/AppIcon";
 import { AppText } from "../ui/AppText";
-import { ActiveChore, Chore } from "../../chores/choreTypes";
+import { ActiveChore } from "../../chores/choreTypes";
 import { useChoresStore } from "../../chores/choreStore";
 import { CategoryIcon } from "./CategoryIcon";
 import { MainStackParamList } from "../../navigation/MainStackParamList";
@@ -165,17 +165,4 @@ function formatDue(dueIso: string): string {
         month: "short",
         year: "numeric",
     }).format(d);
-}
-
-function frequencyLabel(freq: ActiveChore["frequency"]): string {
-    switch (freq) {
-        case "daily":
-            return "Giornaliero";
-        case "weekly":
-            return "Settimanale";
-        case "monthly":
-            return "Mensile";
-        case "semiannual":
-            return "Semestrale";
-    }
 }

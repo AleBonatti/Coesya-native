@@ -4,9 +4,8 @@ import { useNavigation, useRoute, type RouteProp } from "@react-navigation/nativ
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { useCategoryStore } from "../../categories/categoryStore";
-import type { Chore } from "../../chores/choreTypes";
+import type { Chore, ChoreFrequency } from "../../chores/choreTypes";
 import type { ChoresStackParamList } from "../../navigation/ChoresStack";
-import type { ChoreFrequency } from "../../chores/choreTypes";
 
 import { AppShell } from "../../components/layout/AppShell";
 import { AppIcon } from "../../components/ui/AppIcon";
@@ -21,7 +20,7 @@ import { SelectField, type SelectOption } from "../../components/ui/SelectField"
 type Nav = NativeStackNavigationProp<ChoresStackParamList>;
 type Route = RouteProp<ChoresStackParamList, "ChoreCreate">;
 
-const frequencyOptions: ReadonlyArray<SelectOption<ChoreFrequency>> = [
+const frequencyOptions: readonly SelectOption<ChoreFrequency>[] = [
     { value: "daily", label: "Giornaliera" },
     { value: "weekly", label: "Settimanale" },
     { value: "monthly", label: "Mensile" },
@@ -30,7 +29,6 @@ const frequencyOptions: ReadonlyArray<SelectOption<ChoreFrequency>> = [
 
 const confirmDelete = (onConfirm: () => void) => {
     if (Platform.OS === "web") {
-        // eslint-disable-next-line no-alert
         const ok = window.confirm("Eliminare impegno? Questa azione è definitiva.");
         if (ok) onConfirm();
         return;

@@ -1,10 +1,9 @@
 // components/chores/ChorePill.tsx
 import React from "react";
-import { View, ActivityIndicator } from "react-native";
-import { Pressable } from "react-native";
+import { View, Pressable } from "react-native";
 import { AppIcon } from "../../components/ui/AppIcon";
 import { AppText } from "../ui/AppText";
-import { ActiveChore, Chore, ChoreCompletion } from "../../chores/choreTypes";
+import { ChoreCompletion } from "../../chores/choreTypes";
 import { useChoresStore } from "../../chores/choreStore";
 import { CategoryIcon } from "./CategoryIcon";
 
@@ -14,8 +13,6 @@ interface ChorePillProps {
 
 export function ChoreCompletedPill({ item }: ChorePillProps) {
     const toggleComplete = useChoresStore((s) => s.toggleComplete);
-    const togglingIds = useChoresStore((s) => s.togglingIds);
-    const isToggling = Boolean(togglingIds[item.id]);
 
     return (
         <Pressable
@@ -57,17 +54,4 @@ function formatDue(dueIso: string): string {
         month: "short",
         year: "numeric",
     }).format(d);
-}
-
-function frequencyLabel(freq: ActiveChore["frequency"]): string {
-    switch (freq) {
-        case "daily":
-            return "Giornaliero";
-        case "weekly":
-            return "Settimanale";
-        case "monthly":
-            return "Mensile";
-        case "semiannual":
-            return "Semestrale";
-    }
 }

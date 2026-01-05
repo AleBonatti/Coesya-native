@@ -1,6 +1,6 @@
 import React from "react";
 import { NavigationContainer, DefaultTheme, type NavigatorScreenParams } from "@react-navigation/native";
-import { createDrawerNavigator, DrawerContentScrollView, type DrawerContentComponentProps, type DrawerNavigationProp } from "@react-navigation/drawer";
+import { createDrawerNavigator, DrawerContentScrollView, type DrawerContentComponentProps } from "@react-navigation/drawer";
 
 import type { MainStackParamList } from "./MainStackParamList";
 import { CommonActions } from "@react-navigation/native";
@@ -18,7 +18,6 @@ export type RootDrawerParamList = {
 };
 
 const Drawer = createDrawerNavigator<RootDrawerParamList>();
-type RootDrawerNav = DrawerNavigationProp<RootDrawerParamList>;
 
 const TransparentTheme = {
     ...DefaultTheme,

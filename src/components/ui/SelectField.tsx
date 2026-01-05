@@ -11,7 +11,7 @@ export type SelectOption<T extends string | number> = {
 type SelectFieldProps<T extends string | number> = {
     label: string;
     value: T;
-    options: ReadonlyArray<SelectOption<T>>;
+    options: readonly SelectOption<T>[];
     onChange: (next: T) => void;
 
     placeholder?: string;
