@@ -48,7 +48,7 @@ export function FamilyHomeScreen() {
         if (!hasAnyFamily(user)) {
             navigation.reset({ index: 0, routes: [{ name: "Dashboard" }] });
         }
-    }, [user?.families?.length, navigation]);
+    }, [user, navigation]);
 
     // chiudi tutto quando la lista cambia (es. dopo complete)
     useEffect(() => {

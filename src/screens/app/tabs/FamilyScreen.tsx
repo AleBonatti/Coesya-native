@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Modal, Animated, Dimensions, View, ImageBackground, ScrollView, ActivityIndicator, Pressable } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Modal, Animated, View, ImageBackground, ScrollView, ActivityIndicator, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Clipboard from "expo-clipboard";
 import { useDebounce } from "../../../hooks/useDebounce";
@@ -23,7 +23,7 @@ export function FamilyScreen() {
 
     const updateFamily = useFamilyStore((s) => s.updateFamily);
     const fieldErrors = useFamilyStore((s) => s.fieldErrors);
-    const clearFieldError = useFamilyStore((s) => s.clearFieldError);
+    //const clearFieldError = useFamilyStore((s) => s.clearFieldError);
 
     // stato form
     const [name, setName] = useState<string>(family?.name ?? "");

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View, Pressable, ActivityIndicator } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, Text, View, Pressable } from "react-native";
 import { useAuthStore } from "../../auth/authStore";
 import { Screen } from "../../components/layout/Screen";
 import { AuthHeader } from "../../components/auth/AuthHeader";
@@ -17,7 +17,7 @@ export function AuthScreen() {
     const login = useAuthStore((s) => s.login);
     const isLoggingIn = useAuthStore((s) => s.isLoggingIn);
     const register = useAuthStore((s) => s.register);
-    const isRegistering = useAuthStore((s) => s.isRegistering);
+    //const isRegistering = useAuthStore((s) => s.isRegistering);
     const error = useAuthStore((s) => s.error);
     const fieldErrors = useAuthStore((s) => s.fieldErrors);
     const formError = useAuthStore((s) => s.formError);
@@ -31,6 +31,7 @@ export function AuthScreen() {
     // stato registrazione (base, poi lo affiniamo)
     const [registerFirstname, setRegisterFirstname] = useState<string>("");
     const [registerLastname, setRegisterLastname] = useState<string>("");
+    const [registerNickname, setRegisterNickname] = useState<string>("");
     const [registerEmail, setRegisterEmail] = useState<string>("");
     const [registerPassword, setRegisterPassword] = useState<string>("");
     const [registerPasswordConfirm, setRegisterPasswordConfirm] = useState<string>("");
@@ -48,6 +49,7 @@ export function AuthScreen() {
         await register({
             firstname: registerFirstname,
             lastname: registerLastname,
+            nickname: registerNickname,
             email: registerEmail,
             password: registerPassword,
             password_confirmation: registerPasswordConfirm,
@@ -172,6 +174,18 @@ export function AuthScreen() {
                 }}
                 placeholder="il tuo cognome"
                 error={fieldErrors.lastname}
+            />
+            <TextField
+                size="md"
+                label="Nickname"
+                value={registerNickname}
+                onChangeText={(v) => {
+                    setRegisterNickname(v);
+                    clearFieldError("nickname");
+                    clearFormError();
+                }}
+                placeholder="il tuo nickname"
+                error={fieldErrors.nickname}
             />
             <TextField
                 size="md"
