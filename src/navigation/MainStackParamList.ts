@@ -9,8 +9,4 @@ export type MainStackParamList = {
     FamilyTabs: NavigatorScreenParams<FamilyTabsParamList>;
     FamilyHome: undefined;
     FamilyDetail: { familyId: number };
-    Profile: undefined;
-    Notifications: undefined;
-    Privacy: undefined;
-    ResetData: undefined;
 };

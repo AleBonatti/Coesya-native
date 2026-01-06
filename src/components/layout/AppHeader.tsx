@@ -1,7 +1,7 @@
 import React from "react";
 import { Image, Pressable, View } from "react-native";
 import { AppIcon } from "../../components/ui/AppIcon";
-import { DrawerActions, useNavigation } from "@react-navigation/native";
+import { CommonActions, DrawerActions, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 //import type { MainStackParamList } from "../../navigation/MainStackParamList";
 import { useAuthStore } from "../../auth/authStore";
@@ -23,19 +23,33 @@ export function AppHeader() {
     const logo = hasAnyFamily(user) ? logoDark : logoLight;
 
     const handleLogoPress = () => {
-        // chiudi drawer se presente (se non c'è, viene ignorato senza problemi)
+        // chiudi drawer se presente
         navigation.dispatch(DrawerActions.closeDrawer());
 
-        // torna alla root dello stack corrente (se possibile)
-        if (navigation.canGoBack()) {
-            navigation.popToTop();
-        }
-
-        // vai alla “home” corretta senza duplicare
+        // Usa CommonActions per navigare in modo robusto
         if (hasAnyFamily(user)) {
-            navigation.navigate("FamilyTabs", { screen: "Home" }); // o la tab che vuoi
+            // Naviga alla home delle tabs
+            navigation.dispatch(
+                CommonActions.navigate({
+                    name: "Main",
+                    params: {
+                        screen: "FamilyTabs",
+                        params: {
+                            screen: "Home",
+                        },
+                    },
+                })
+            );
         } else {
-            navigation.navigate("FamilyWizardHome");
+            // Naviga al wizard home
+            navigation.dispatch(
+                CommonActions.navigate({
+                    name: "Main",
+                    params: {
+                        screen: "FamilyWizardHome",
+                    },
+                })
+            );
         }
     };
 

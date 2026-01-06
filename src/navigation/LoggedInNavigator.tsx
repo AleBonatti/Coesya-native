@@ -1,6 +1,5 @@
 import React from "react";
 import { createDrawerNavigator, DrawerContentScrollView, type DrawerContentComponentProps } from "@react-navigation/drawer";
-import { CommonActions } from "@react-navigation/native";
 import type { NavigatorScreenParams } from "@react-navigation/native";
 
 import { Pressable, View } from "react-native";
@@ -15,9 +14,17 @@ import { hasAnyFamily } from "../auth/authSelectors";
 import type { MainStackParamList } from "./MainStackParamList";
 import { MainStack } from "./MainStack";
 import { FamilyOnboardingStack } from "./FamilyOnboardingStack";
+import { ProfileScreen } from "../screens/app/ProfileScreen";
+import { NotificationsScreen } from "../screens/app/NotificationsScreen";
+import { PrivacyScreen } from "../screens/app/PrivacyScreen";
+import { ResetDataScreen } from "../screens/app/ResetDataScreen";
 
 export type LoggedDrawerParamList = {
     Main: NavigatorScreenParams<MainStackParamList>;
+    Profile: undefined;
+    Notifications: undefined;
+    Privacy: undefined;
+    ResetData: undefined;
 };
 
 const Drawer = createDrawerNavigator<LoggedDrawerParamList>();
@@ -41,6 +48,12 @@ export function LoggedInNavigator() {
                 }}
                 drawerContent={(props) => <DrawerContent {...props} />}>
                 <Drawer.Screen name="Main">{() => (wizardRequired ? <WizardShell /> : <MainShell hasFamily={hasFamily} />)}</Drawer.Screen>
+
+                {/* Settings screens available from both wizard and main */}
+                <Drawer.Screen name="Profile" component={ProfileScreen} />
+                <Drawer.Screen name="Notifications" component={NotificationsScreen} />
+                <Drawer.Screen name="Privacy" component={PrivacyScreen} />
+                <Drawer.Screen name="ResetData" component={ResetDataScreen} />
             </Drawer.Navigator>
         </View>
     );
@@ -68,13 +81,8 @@ function MainShell({ hasFamily }: { hasFamily: boolean }) {
 function DrawerContent({ navigation }: DrawerContentComponentProps) {
     const logout = useAuthStore((s) => s.logout);
 
-    const go = (screen: keyof MainStackParamList) => {
-        navigation.dispatch(
-            CommonActions.navigate({
-                name: "Main",
-                params: { screen },
-            })
-        );
+    const go = (screen: keyof LoggedDrawerParamList) => {
+        navigation.navigate(screen as any);
         navigation.closeDrawer();
     };
 
