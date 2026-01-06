@@ -3,9 +3,10 @@ import { Image, Pressable, View } from "react-native";
 import { AppIcon } from "../../components/ui/AppIcon";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { MainStackParamList } from "../../navigation/MainStackParamList";
+//import type { MainStackParamList } from "../../navigation/MainStackParamList";
 import { useAuthStore } from "../../auth/authStore";
 import { hasAnyFamily } from "../../auth/authSelectors";
+import { MainStackParamList } from "../../navigation/MainStackParamList";
 
 const logoDark = require("../../../assets/logo/logo-coesya.png");
 const logoLight = require("../../../assets/logo/logo-coesya-transparent.png");
@@ -13,6 +14,7 @@ const logoLight = require("../../../assets/logo/logo-coesya-transparent.png");
 type Nav = NativeStackNavigationProp<MainStackParamList>;
 
 export function AppHeader() {
+    //const navigation = useNavigation();
     const navigation = useNavigation<Nav>();
     const user = useAuthStore((s) => s.user);
 
@@ -33,7 +35,7 @@ export function AppHeader() {
         if (hasAnyFamily(user)) {
             navigation.navigate("FamilyTabs", { screen: "Home" }); // o la tab che vuoi
         } else {
-            navigation.navigate("Dashboard");
+            navigation.navigate("FamilyWizardHome");
         }
     };
 
@@ -50,7 +52,7 @@ export function AppHeader() {
             </Pressable>
 
             <Pressable
-                onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+                onPress={() => navigation.getParent("LoggedDrawer" as never)?.dispatch(DrawerActions.openDrawer())}
                 accessibilityRole="button"
                 accessibilityLabel="Impostazioni">
                 <AppIcon

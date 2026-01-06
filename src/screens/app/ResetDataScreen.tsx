@@ -6,7 +6,7 @@ export function ResetDataScreen() {
     return (
         <AppShell>
             <View className="pt-6">
-                <Text className="text-xl font-semibold text-white">Reset Data</Text>
+                <Text className="text-xl font-semibold text-text-main">Reset Data</Text>
             </View>
         </AppShell>
     );

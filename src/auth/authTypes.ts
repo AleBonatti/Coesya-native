@@ -6,6 +6,7 @@ export interface User {
     email: string;
     profile_photo_path: string | null;
     profile_photo_url: string;
+    has_completed_wizard: boolean;
     families: Family[];
 }
 export interface FamilyPivot {

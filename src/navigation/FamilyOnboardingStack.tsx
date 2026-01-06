@@ -1,10 +1,10 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import type { MainStackParamList } from "./MainStackParamList";
 
-import { DashboardScreen } from "../screens/app/DashboardScreen";
+import { FamilyWizardHomeScreen } from "../screens/app/FamilyWizardHomeScreen";
 import { CreateFamilyScreen } from "../screens/app/CreateFamilyScreen";
 import { JoinFamilyScreen } from "../screens/app/JoinFamilyScreen";
+import { MainStackParamList } from "./MainStackParamList";
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -16,8 +16,8 @@ export function FamilyOnboardingStack() {
                 contentStyle: { backgroundColor: "transparent" },
             }}>
             <Stack.Screen
-                name="Dashboard"
-                component={DashboardScreen}
+                name="FamilyWizardHome"
+                component={FamilyWizardHomeScreen}
             />
             <Stack.Screen
                 name="CreateFamily"

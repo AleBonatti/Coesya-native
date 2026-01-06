@@ -46,7 +46,7 @@ export function FamilyHomeScreen() {
     // Edge case: per qualche motivo siamo qui senza famiglie
     useEffect(() => {
         if (!hasAnyFamily(user)) {
-            navigation.reset({ index: 0, routes: [{ name: "Dashboard" }] });
+            navigation.reset({ index: 0, routes: [{ name: "FamilyWizardHome" }] });
         }
     }, [user, navigation]);
 

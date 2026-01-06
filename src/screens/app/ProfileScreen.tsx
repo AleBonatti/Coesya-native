@@ -6,7 +6,7 @@ export function ProfileScreen() {
     return (
         <AppShell>
             <View className="pt-6">
-                <Text className="text-xl font-semibold text-white">Profile</Text>
+                <Text className="text-xl font-semibold text-text-main">Profile</Text>
             </View>
         </AppShell>
     );

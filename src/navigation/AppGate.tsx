@@ -4,15 +4,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import { useAuthStore } from "../auth/authStore";
 import { AuthNavigator } from "./AuthNavigator";
-import { RootNavigator } from "./RootNavigator"; // drawer + stack famiglia
-import { hasAnyFamily } from "../auth/authSelectors";
-//import { FamilyOnboardingNavigator } from "./FamilyOnboardingNavigator"; // stack crea/join
+import { LoggedInNavigator } from "./LoggedInNavigator";
 
 export function AppGate({ fontsLoaded }: { fontsLoaded: boolean }) {
     const bootstrap = useAuthStore((s) => s.bootstrap);
     const isBootstrapping = useAuthStore((s) => s.isBootstrapping);
     const token = useAuthStore((s) => s.token);
-    const user = useAuthStore((s) => s.user);
 
     useEffect(() => {
         void bootstrap();
@@ -30,12 +27,13 @@ export function AppGate({ fontsLoaded }: { fontsLoaded: boolean }) {
             </LinearGradient>
         );
     }
+
     if (!token) return <AuthNavigator />;
 
     return (
         <>
             <StatusBar style="light" />
-            <RootNavigator hasFamily={hasAnyFamily(user)} />
+            <LoggedInNavigator />
         </>
     );
 }

@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { View, Image } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-//import type { AppStackParamList } from "../../navigation/AppNavigator";
-import type { MainStackParamList } from "../../navigation/MainStackParamList";
 
 import { useAuthStore } from "../../auth/authStore";
 
@@ -13,6 +11,7 @@ import { LinkText } from "../../components/ui/LinkText";
 import { TextField } from "../../components/ui/TextField";
 import { Button } from "../../components/ui/Button";
 import { useFamilyStore } from "../../family/familyStore";
+import { MainStackParamList } from "../../navigation/MainStackParamList";
 
 const logo = require("../../../assets/upload.png");
 
@@ -35,11 +34,10 @@ export function CreateFamilyScreen({ navigation }: Props) {
             await createFamily({ name: name.trim() });
             await refreshMe();
 
-            navigation.reset({
+            /* navigation.reset({
                 index: 0,
                 routes: [{ name: "FamilyTabs" }],
-            });
-            //console.log(useAuthStore.getState().user, "families:", useAuthStore.getState().user?.families);
+            }); */
         } catch {
             // errori già gestiti nello store
         }
