@@ -5,6 +5,7 @@ import * as Clipboard from "expo-clipboard";
 import { useDebounce } from "../../../hooks/useDebounce";
 import * as ImagePicker from "expo-image-picker";
 import { AppShell } from "../../../components/layout/AppShell";
+import { useNotificationStore } from "../../../components/notifications/notificationStore";
 import { useAuthStore } from "../../../auth/authStore";
 import { useFamilyStore } from "../../../family/familyStore";
 import { getCurrentFamily } from "../../../auth/authSelectors";
@@ -13,8 +14,10 @@ import { IconButton } from "../../../components/ui/IconButton";
 import { Button } from "../../../components/ui/Button";
 import { AppText } from "../../../components/ui/AppText";
 import { Avatar } from "../../../components/ui/Avatar";
+import { AppIcon } from "../../../components/ui/AppIcon";
 
 export function FamilyScreen() {
+    const notify = useNotificationStore((s) => s.show);
     const user = useAuthStore((s) => s.user);
     const family = getCurrentFamily(user);
     const familyId = family?.id;
@@ -23,11 +26,9 @@ export function FamilyScreen() {
 
     const updateFamily = useFamilyStore((s) => s.updateFamily);
     const fieldErrors = useFamilyStore((s) => s.fieldErrors);
-    //const clearFieldError = useFamilyStore((s) => s.clearFieldError);
-
     // stato form
     const [name, setName] = useState<string>(family?.name ?? "");
-    const [code, setCode] = useState<string>(""); // verrà valorizzato da API o da family se ce l’hai
+    const [slug, setSlug] = useState<string>(family?.slug ?? "");
 
     const [showNameSpinner, setShowNameSpinner] = useState(false);
 
@@ -45,39 +46,32 @@ export function FamilyScreen() {
     const didAnimateOpenRef = useRef(false);
     const [sheetHeight, setSheetHeight] = useState(0);
     const [inviteOpen, setInviteOpen] = useState(false);
-    const [inviteCode, setInviteCode] = useState<string>("");
     const slideY = useRef(new Animated.Value(0)).current;
     const backdropOpacity = useRef(new Animated.Value(0)).current;
 
-    const isSavingInviteCode = useFamilyStore((s) => s.isSavingInviteCode);
-    const inviteCodeError = useFamilyStore((s) => s.inviteCodeError);
     const saveInviteCode = useFamilyStore((s) => s.saveInviteCode);
-    const clearInviteCodeError = useFamilyStore((s) => s.clearInviteCodeError);
 
-    function generate5Digits(): string {
-        const n = Math.floor(10000 + Math.random() * 90000);
-        return String(n);
-    }
+    const [sharing, setSharing] = useState(false);
+    const shareTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const openInvite = () => {
         if (!familyId) return;
 
-        clearInviteCodeError();
-        const newCode = generate5Digits();
-        setInviteCode(newCode);
+        clearShareTimer();
+        setSharing(false);
 
-        // reset gating
+        // ... il tuo gating sheet
         setSheetHeight(0);
         setIsReadyToShowSheet(false);
         didAnimateOpenRef.current = false;
-
         setInviteOpen(true);
-
-        void saveInviteCode(familyId, newCode);
     };
 
     const closeInvite = () => {
         const endY = sheetHeight > 0 ? sheetHeight : 300;
+
+        clearShareTimer();
+        setSharing(false);
 
         Animated.parallel([
             Animated.timing(slideY, {
@@ -93,6 +87,13 @@ export function FamilyScreen() {
         ]).start(({ finished }) => {
             if (finished) setInviteOpen(false);
         });
+    };
+
+    const clearShareTimer = () => {
+        if (shareTimerRef.current) {
+            clearTimeout(shareTimerRef.current);
+            shareTimerRef.current = null;
+        }
     };
 
     useEffect(() => {
@@ -116,16 +117,52 @@ export function FamilyScreen() {
     }, [inviteOpen, sheetHeight]);
 
     const copyInviteCode = async () => {
-        if (!inviteCode) return;
-        await Clipboard.setStringAsync(inviteCode);
+        if (!family?.code) return;
+        await Clipboard.setStringAsync(family.code);
         // opzionale: toast/snackbar in futuro
+        notify({
+            type: "success",
+            title: "Copiato",
+            message: "Codice copiato negli appunti.",
+        });
+    };
+
+    const handleShareInviteCode = () => {
+        if (!familyId || sharing) return;
+
+        clearShareTimer();
+        setSharing(true);
+
+        shareTimerRef.current = setTimeout(() => {
+            void (async () => {
+                try {
+                    await saveInviteCode(familyId);
+
+                    // qui notifichi successo (toast/snackbar)
+                    notify({
+                        type: "success",
+                        title: "Codice salvato",
+                        message: `Codice famiglia inviato con successo.`,
+                    });
+                } catch {
+                    notify({
+                        type: "error",
+                        title: "Errore",
+                        message: "Non è stato possibile inviare il codice. Riprova.",
+                    });
+                } finally {
+                    setSharing(false);
+                    shareTimerRef.current = null;
+                }
+            })();
+        }, 650);
     };
 
     // sync quando cambia family (es. refreshMe)
     useEffect(() => {
         if (!family) return;
         setName(family.name);
-        setCode(family.code ?? "");
+        setSlug(family.slug);
     }, [family]);
 
     // debounce di 1s sul nome
@@ -152,35 +189,25 @@ export function FamilyScreen() {
 
         const trimmed = debouncedName.trim();
         if (!trimmed) return;
-
         if (trimmed === lastSentNameRef.current) return;
 
         const seq = ++requestSeqRef.current;
 
         setShowNameSpinner(true);
+        void (async () => {
+            try {
+                lastSentNameRef.current = trimmed;
 
-        setTimeout(() => {
-            void (async () => {
-                try {
-                    lastSentNameRef.current = trimmed;
+                const updated = await updateFamily(familyId, { name: trimmed });
 
-                    const updated = await updateFamily(familyId, { name: trimmed });
+                if (seq !== requestSeqRef.current) return;
 
-                    if (seq !== requestSeqRef.current) return;
-
-                    setCode(updated.code); // ✅ aggiorna codice/slug
-                    await refreshMe(); // opzionale ma ok se vuoi riallineare user/families
-                } catch {
-                    // errori già nello store (fieldErrors/formError)
-                } finally {
-                    /* if (spinnerTimerRef.current) {
-                        clearTimeout(spinnerTimerRef.current);
-                        spinnerTimerRef.current = null;
-                    } */
-                    setShowNameSpinner(false);
-                }
-            })();
-        }, 1000);
+                setSlug(updated.slug);
+                await refreshMe();
+            } finally {
+                setShowNameSpinner(false);
+            }
+        })();
     }, [debouncedName, familyId, updateFamily, refreshMe]);
 
     const handlePickPhoto = async () => {
@@ -216,6 +243,15 @@ export function FamilyScreen() {
         if (!familyId) return;
         void fetchMembers(familyId);
     }, [familyId, fetchMembers]);
+
+    useEffect(() => {
+        return () => {
+            if (shareTimerRef.current) {
+                clearTimeout(shareTimerRef.current);
+                shareTimerRef.current = null;
+            }
+        };
+    }, []);
 
     return (
         <AppShell
@@ -270,8 +306,8 @@ export function FamilyScreen() {
                             />
                             <TextField
                                 variant="dark"
-                                label="Codice famiglia vicina"
-                                value={code}
+                                label="Codice vicina"
+                                value={`#${slug}`}
                                 editable={false}
                                 placeholder="—"
                             />
@@ -319,7 +355,20 @@ export function FamilyScreen() {
                                                         className="text-text-main">
                                                         {`${m.firstname} ${m.lastname}`}
                                                     </AppText>
-                                                    {m.email ? <AppText className="text-text-main/60">{m.email}</AppText> : null}
+                                                    {m.nickname ? (
+                                                        <View className="flex-row flex-wrap gap-1 items-center">
+                                                            <AppIcon
+                                                                name="information-circle-outline"
+                                                                color="#868686"
+                                                            />
+                                                            <AppText
+                                                                variant="placeholder"
+                                                                className="text-xs"
+                                                                weight="medium">
+                                                                {m.nickname}
+                                                            </AppText>
+                                                        </View>
+                                                    ) : null}
                                                 </View>
                                             </View>
                                         </View>
@@ -327,12 +376,12 @@ export function FamilyScreen() {
                                 </View>
                             )}
                         </View>
-                        {/* ✅ PULSANTE GENERAZIONE CODICE */}
+                        {/* ✅ PULSANTE CONDIVISIONE CODICE */}
                         <View className="px-6">
                             <Button
                                 variant="tertiary"
                                 size="sm"
-                                title="Genera codice invito"
+                                title="Mostra codice invito"
                                 onPress={openInvite}
                             />
                         </View>
@@ -373,11 +422,10 @@ export function FamilyScreen() {
                             if (h > 0) setSheetHeight(h);
                         }}>
                         <InviteSheetContent
-                            inviteCode={inviteCode}
-                            isSavingInviteCode={isSavingInviteCode}
-                            inviteCodeError={inviteCodeError}
-                            clearInviteCodeError={clearInviteCodeError}
+                            inviteCode={family?.code}
                             copyInviteCode={copyInviteCode}
+                            shareInviteCode={handleShareInviteCode}
+                            sharing={sharing}
                         />
                     </View>
                 ) : null}
@@ -393,11 +441,10 @@ export function FamilyScreen() {
                             transform: [{ translateY: slideY }],
                         }}>
                         <InviteSheetContent
-                            inviteCode={inviteCode}
-                            isSavingInviteCode={isSavingInviteCode}
-                            inviteCodeError={inviteCodeError}
-                            clearInviteCodeError={clearInviteCodeError}
+                            inviteCode={family?.code}
                             copyInviteCode={copyInviteCode}
+                            shareInviteCode={handleShareInviteCode}
+                            sharing={sharing}
                         />
                     </Animated.View>
                 ) : null}
@@ -406,8 +453,8 @@ export function FamilyScreen() {
     );
 }
 
-function InviteSheetContent(props: { inviteCode: string; isSavingInviteCode: boolean; inviteCodeError: string | null; clearInviteCodeError: () => void; copyInviteCode: () => Promise<void> }) {
-    const { inviteCode, isSavingInviteCode, inviteCodeError, clearInviteCodeError, copyInviteCode } = props;
+function InviteSheetContent(props: { inviteCode: string | undefined; copyInviteCode: () => Promise<void>; shareInviteCode: () => void; sharing: boolean }) {
+    const { inviteCode, copyInviteCode, shareInviteCode, sharing } = props;
 
     return (
         <LinearGradient
@@ -435,21 +482,6 @@ function InviteSheetContent(props: { inviteCode: string; isSavingInviteCode: boo
 
             <View className="mt-4 rounded-2xl py-4 items-center">
                 <AppText className="text-4xl text-text-main">{inviteCode || "— — — — —"}</AppText>
-
-                {isSavingInviteCode ? (
-                    <View className="mt-3 flex-row items-center gap-2">
-                        <ActivityIndicator />
-                        <AppText className="text-text-main/60">Salvataggio…</AppText>
-                    </View>
-                ) : null}
-
-                {inviteCodeError ? (
-                    <Pressable
-                        onPress={clearInviteCodeError}
-                        className="mt-3">
-                        <AppText className="text-red-300">{inviteCodeError} (tocca per chiudere)</AppText>
-                    </Pressable>
-                ) : null}
             </View>
 
             <View className="mt-5 gap-3">
@@ -457,12 +489,13 @@ function InviteSheetContent(props: { inviteCode: string; isSavingInviteCode: boo
                     variant="white"
                     title="Copia codice"
                     onPress={() => void copyInviteCode()}
-                    disabled={!inviteCode}
+                    disabled={!inviteCode || sharing}
                 />
                 <Button
                     variant="ghost"
-                    title="Condividi codice"
-                    onPress={() => {}}
+                    title={sharing ? "Salvataggio…" : "Condividi codice"}
+                    onPress={shareInviteCode}
+                    disabled={!inviteCode || sharing}
                 />
             </View>
         </LinearGradient>

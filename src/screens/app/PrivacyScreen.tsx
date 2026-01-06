@@ -6,7 +6,7 @@ export function PrivacyScreen() {
     return (
         <AppShell>
             <View className="pt-6">
-                <Text className="text-xl font-semibold text-white">Privacy</Text>
+                <Text className="text-xl font-semibold text-text-main">Privacy</Text>
             </View>
         </AppShell>
     );

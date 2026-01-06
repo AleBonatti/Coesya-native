@@ -2,6 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { Screen } from "./Screen";
 import { AppHeader } from "./AppHeader";
+import { NotificationHost } from "../notifications/NotificationHost";
 
 interface AppShellProps {
     children: React.ReactNode;
@@ -15,7 +16,10 @@ export function AppShell({ children, backgroundClassName = "bg-transparent", sho
         <Screen backgroundClassName={backgroundClassName}>
             <View className="flex-1">
                 {showHeader ? <AppHeader /> : null}
-                <View className={`flex-1 ${padded ? "px-6 pt-4" : ""}`}>{children}</View>
+                <View className={`flex-1 ${padded ? "px-6 pt-4" : ""}`}>
+                    {children}
+                    <NotificationHost />
+                </View>
             </View>
         </Screen>
     );

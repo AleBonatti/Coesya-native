@@ -1,11 +1,12 @@
 import React from "react";
 import { Image, Pressable, View } from "react-native";
 import { AppIcon } from "../../components/ui/AppIcon";
-import { DrawerActions, useNavigation } from "@react-navigation/native";
+import { CommonActions, DrawerActions, useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { MainStackParamList } from "../../navigation/MainStackParamList";
+//import type { MainStackParamList } from "../../navigation/MainStackParamList";
 import { useAuthStore } from "../../auth/authStore";
 import { hasAnyFamily } from "../../auth/authSelectors";
+import { MainStackParamList } from "../../navigation/MainStackParamList";
 
 const logoDark = require("../../../assets/logo/logo-coesya.png");
 const logoLight = require("../../../assets/logo/logo-coesya-transparent.png");
@@ -13,6 +14,7 @@ const logoLight = require("../../../assets/logo/logo-coesya-transparent.png");
 type Nav = NativeStackNavigationProp<MainStackParamList>;
 
 export function AppHeader() {
+    //const navigation = useNavigation();
     const navigation = useNavigation<Nav>();
     const user = useAuthStore((s) => s.user);
 
@@ -21,19 +23,33 @@ export function AppHeader() {
     const logo = hasAnyFamily(user) ? logoDark : logoLight;
 
     const handleLogoPress = () => {
-        // chiudi drawer se presente (se non c'è, viene ignorato senza problemi)
+        // chiudi drawer se presente
         navigation.dispatch(DrawerActions.closeDrawer());
 
-        // torna alla root dello stack corrente (se possibile)
-        if (navigation.canGoBack()) {
-            navigation.popToTop();
-        }
-
-        // vai alla “home” corretta senza duplicare
+        // Usa CommonActions per navigare in modo robusto
         if (hasAnyFamily(user)) {
-            navigation.navigate("FamilyTabs", { screen: "Home" }); // o la tab che vuoi
+            // Naviga alla home delle tabs
+            navigation.dispatch(
+                CommonActions.navigate({
+                    name: "Main",
+                    params: {
+                        screen: "FamilyTabs",
+                        params: {
+                            screen: "Home",
+                        },
+                    },
+                })
+            );
         } else {
-            navigation.navigate("Dashboard");
+            // Naviga al wizard home
+            navigation.dispatch(
+                CommonActions.navigate({
+                    name: "Main",
+                    params: {
+                        screen: "FamilyWizardHome",
+                    },
+                })
+            );
         }
     };
 
@@ -50,7 +66,7 @@ export function AppHeader() {
             </Pressable>
 
             <Pressable
-                onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+                onPress={() => navigation.getParent("LoggedDrawer" as never)?.dispatch(DrawerActions.openDrawer())}
                 accessibilityRole="button"
                 accessibilityLabel="Impostazioni">
                 <AppIcon

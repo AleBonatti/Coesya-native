@@ -22,9 +22,9 @@ module.exports = {
                     light: "#868686", // placeholder, link non attivi
                 },
                 brand: {
-                    primary: "#A76D99", // pulsanti principali, link attivi
+                    primary: "#A76D99", // violetto pulsanti principali, link attivi
                     darker: "#5E134C",
-                    accent: "#FFA500", // colore alternativo (es. pulsanti secondari)
+                    accent: "#FFA500", // giallo colore alternativo (es. pulsanti secondari)
                     tertiary: "#F06000", // colore alternativo (es. pulsanti secondari)
                 },
             },

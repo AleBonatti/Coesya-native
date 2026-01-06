@@ -1,39 +1,88 @@
 import React from "react";
-import { NavigationContainer, DefaultTheme, type NavigatorScreenParams } from "@react-navigation/native";
 import { createDrawerNavigator, DrawerContentScrollView, type DrawerContentComponentProps } from "@react-navigation/drawer";
-
-import type { MainStackParamList } from "./MainStackParamList";
-import { CommonActions } from "@react-navigation/native";
+import type { NavigatorScreenParams } from "@react-navigation/native";
 
 import { Pressable, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+
 import { AppIcon } from "../components/ui/AppIcon";
-
 import { AppText, type TextVariant } from "../components/ui/AppText";
+
 import { useAuthStore } from "../auth/authStore";
+import { hasAnyFamily } from "../auth/authSelectors";
+
+import type { MainStackParamList } from "./MainStackParamList";
 import { MainStack } from "./MainStack";
+import { FamilyOnboardingStack } from "./FamilyOnboardingStack";
+import { ProfileScreen } from "../screens/app/ProfileScreen";
+import { NotificationsScreen } from "../screens/app/NotificationsScreen";
+import { PrivacyScreen } from "../screens/app/PrivacyScreen";
+import { ResetDataScreen } from "../screens/app/ResetDataScreen";
 
-export type RootDrawerParamList = {
+export type LoggedDrawerParamList = {
     Main: NavigatorScreenParams<MainStackParamList>;
+    Profile: undefined;
+    Notifications: undefined;
+    Privacy: undefined;
+    ResetData: undefined;
 };
 
-const Drawer = createDrawerNavigator<RootDrawerParamList>();
+const Drawer = createDrawerNavigator<LoggedDrawerParamList>();
 
-const TransparentTheme = {
-    ...DefaultTheme,
-    colors: { ...DefaultTheme.colors, background: "transparent" },
-};
+export function LoggedInNavigator() {
+    const user = useAuthStore((s) => s.user);
+
+    const hasFamily = hasAnyFamily(user);
+    const wizardRequired = !!user && (!user.has_completed_wizard || !hasFamily);
+
+    return (
+        <View style={{ flex: 1 }}>
+            {/* ✅ Drawer sempre montato nel logged */}
+            <Drawer.Navigator
+                id="LoggedDrawer"
+                screenOptions={{
+                    headerShown: false,
+                    drawerType: "front",
+                    drawerStyle: { backgroundColor: "transparent" },
+                    //sceneContainerStyle: { backgroundColor: "transparent" },
+                }}
+                drawerContent={(props) => <DrawerContent {...props} />}>
+                <Drawer.Screen name="Main">{() => (wizardRequired ? <WizardShell /> : <MainShell hasFamily={hasFamily} />)}</Drawer.Screen>
+
+                {/* Settings screens available from both wizard and main */}
+                <Drawer.Screen name="Profile" component={ProfileScreen} />
+                <Drawer.Screen name="Notifications" component={NotificationsScreen} />
+                <Drawer.Screen name="Privacy" component={PrivacyScreen} />
+                <Drawer.Screen name="ResetData" component={ResetDataScreen} />
+            </Drawer.Navigator>
+        </View>
+    );
+}
+
+function WizardShell() {
+    return (
+        <LinearGradient
+            colors={["#A76D99", "#5E134C"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={{ flex: 1 }}>
+            <FamilyOnboardingStack />
+        </LinearGradient>
+    );
+}
+
+function MainShell({ hasFamily }: { hasFamily: boolean }) {
+    // niente background globale qui: lasci ai singoli screen la gestione dello sfondo
+    return <MainStack hasFamily={hasFamily} />;
+}
+
+/** ===== DrawerContent (il tuo, identico a quello che hai già) ===== */
 
 function DrawerContent({ navigation }: DrawerContentComponentProps) {
     const logout = useAuthStore((s) => s.logout);
 
-    const go = (screen: keyof MainStackParamList) => {
-        navigation.dispatch(
-            CommonActions.navigate({
-                name: "Main",
-                params: { screen },
-            })
-        );
+    const go = (screen: keyof LoggedDrawerParamList) => {
+        navigation.navigate(screen as any);
         navigation.closeDrawer();
     };
 
@@ -53,10 +102,7 @@ function DrawerContent({ navigation }: DrawerContentComponentProps) {
                         weight="semibold">
                         Settings
                     </AppText>
-                    <Pressable
-                        onPress={() => {
-                            navigation.closeDrawer();
-                        }}>
+                    <Pressable onPress={() => navigation.closeDrawer()}>
                         <AppIcon
                             name="close-outline"
                             size={22}
@@ -64,6 +110,7 @@ function DrawerContent({ navigation }: DrawerContentComponentProps) {
                         />
                     </Pressable>
                 </View>
+
                 <View className="flex-1 gap-3 mt-12 px-6">
                     <DrawerItem
                         label="Profilo"
@@ -73,10 +120,6 @@ function DrawerContent({ navigation }: DrawerContentComponentProps) {
                         label="Notifiche"
                         onPress={() => go("Notifications")}
                     />
-                    {/* <DrawerItem
-                        label="Tema"
-                        onPress={() => go("Theme")}
-                    /> */}
                     <DrawerItem
                         label="Privacy e condizioni"
                         onPress={() => go("Privacy")}
@@ -89,31 +132,12 @@ function DrawerContent({ navigation }: DrawerContentComponentProps) {
                         label="Logout"
                         variante="secondary"
                         onPress={async () => {
-                            await logout(); // App.tsx farà switch verso AuthNavigator
+                            await logout();
                         }}
                     />
                 </View>
             </DrawerContentScrollView>
         </LinearGradient>
-    );
-}
-
-export function RootNavigator({ hasFamily }: { hasFamily: boolean }) {
-    return (
-        <RootBackground hasFamily={hasFamily}>
-            <NavigationContainer theme={TransparentTheme}>
-                <Drawer.Navigator
-                    screenOptions={{
-                        headerShown: false,
-                        drawerType: "front",
-                        // IMPORTANTE: lascia trasparente lo “scheletro” del drawer, perché il gradient lo disegniamo noi nel contenuto.
-                        drawerStyle: { backgroundColor: "transparent" },
-                    }}
-                    drawerContent={(props) => <DrawerContent {...props} />}>
-                    <Drawer.Screen name="Main">{() => <MainStack hasFamily={hasFamily} />}</Drawer.Screen>
-                </Drawer.Navigator>
-            </NavigationContainer>
-        </RootBackground>
     );
 }
 
@@ -129,23 +153,5 @@ function DrawerItem({ label, variante = "light", onPress }: { label: string; var
                 {label}
             </AppText>
         </Pressable>
-    );
-}
-
-function RootBackground({ hasFamily, children }: { hasFamily: boolean; children: React.ReactNode }) {
-    if (hasFamily) {
-        // niente gradient
-        return <View style={{ flex: 1 }}>{children}</View>;
-    }
-
-    // gradient solo onboarding famiglia
-    return (
-        <LinearGradient
-            colors={["#A76D99", "#5E134C"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={{ flex: 1 }}>
-            {children}
-        </LinearGradient>
     );
 }

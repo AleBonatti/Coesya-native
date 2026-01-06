@@ -2,15 +2,14 @@ import React from "react";
 import { View } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-//import type { AppStackParamList } from "../../navigation/AppNavigator";
-import type { MainStackParamList } from "../../navigation/MainStackParamList";
 import { AppShell } from "../../components/layout/AppShell";
 import { Button } from "../../components/ui/Button";
 import { AppText } from "../../components/ui/AppText";
+import { MainStackParamList } from "../../navigation/MainStackParamList";
 
-type Props = NativeStackScreenProps<MainStackParamList, "Dashboard">;
+type Props = NativeStackScreenProps<MainStackParamList, "FamilyWizardHome">;
 
-export function DashboardScreen({ navigation }: Props) {
+export function FamilyWizardHomeScreen({ navigation }: Props) {
     return (
         <AppShell backgroundClassName="bg-transparent">
             <View className="flex-1 justify-end pb-6">

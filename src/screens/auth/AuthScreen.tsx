@@ -184,7 +184,7 @@ export function AuthScreen() {
                     clearFieldError("nickname");
                     clearFormError();
                 }}
-                placeholder="il tuo nickname"
+                placeholder="Scegli un nickname"
                 error={fieldErrors.nickname}
             />
             <TextField
