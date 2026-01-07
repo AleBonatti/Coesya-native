@@ -107,11 +107,6 @@ export function ChorePill({ item, isOpen, onToggle, onClose }: ChorePillProps) {
                                 className="text-sm">
                                 {formatDue(item.due_at)}
                             </AppText>
-                            {/* <AppText
-                            variant="placeholder"
-                            className="text-sm">
-                            - P{item.priority} · W{item.weight}
-                        </AppText> */}
                         </View>
                     </View>
                 </View>

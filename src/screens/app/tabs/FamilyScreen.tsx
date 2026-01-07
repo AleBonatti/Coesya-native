@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Modal, Animated, View, ImageBackground, ScrollView, ActivityIndicator, Pressable } from "react-native";
+import { Modal, Animated, View, ImageBackground, ScrollView, ActivityIndicator, Pressable, Alert, Platform } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Clipboard from "expo-clipboard";
 import { useDebounce } from "../../../hooks/useDebounce";
@@ -13,8 +13,20 @@ import { TextField } from "../../../components/ui/TextField";
 import { IconButton } from "../../../components/ui/IconButton";
 import { Button } from "../../../components/ui/Button";
 import { AppText } from "../../../components/ui/AppText";
-import { Avatar } from "../../../components/ui/Avatar";
-import { AppIcon } from "../../../components/ui/AppIcon";
+import { UserPill } from "../../../family/UserPill";
+
+const confirmRemoveMember = (memberName: string, onConfirm: () => void) => {
+    if (Platform.OS === "web") {
+        const ok = window.confirm(`Rimuovere ${memberName} dalla famiglia? Questa azione è definitiva.`);
+        if (ok) onConfirm();
+        return;
+    }
+
+    Alert.alert("Rimuovere membro?", `Vuoi rimuovere ${memberName} dalla famiglia? Questa azione è definitiva.`, [
+        { text: "Annulla", style: "cancel" },
+        { text: "Rimuovi", style: "destructive", onPress: onConfirm },
+    ]);
+};
 
 export function FamilyScreen() {
     const notify = useNotificationStore((s) => s.show);
@@ -40,6 +52,11 @@ export function FamilyScreen() {
     const membersError = useFamilyStore((s) => s.membersError);
     const fetchMembers = useFamilyStore((s) => s.fetchMembers);
     const clearMembersError = useFamilyStore((s) => s.clearMembersError);
+    const removeMember = useFamilyStore((s) => s.removeMember);
+    const removingMemberId = useFamilyStore((s) => s.removingMemberId);
+
+    // state for open member pill
+    const [openMemberId, setOpenMemberId] = useState<number | null>(null);
 
     // layer codice
     const [isReadyToShowSheet, setIsReadyToShowSheet] = useState(false);
@@ -116,6 +133,11 @@ export function FamilyScreen() {
         setIsReadyToShowSheet(true);
     }, [inviteOpen, sheetHeight]);
 
+    // close all member pills when members list changes
+    useEffect(() => {
+        setOpenMemberId(null);
+    }, [members.length]);
+
     const copyInviteCode = async () => {
         if (!family?.code) return;
         await Clipboard.setStringAsync(family.code);
@@ -156,6 +178,27 @@ export function FamilyScreen() {
                 }
             })();
         }, 650);
+    };
+
+    const handleRemoveMember = (userId: number, memberName: string) => {
+        if (!familyId) return;
+
+        confirmRemoveMember(memberName, async () => {
+            try {
+                await removeMember(familyId, userId);
+                notify({
+                    type: "success",
+                    title: "Membro rimosso",
+                    message: "Il membro è stato rimosso dalla famiglia.",
+                });
+            } catch {
+                notify({
+                    type: "error",
+                    title: "Errore",
+                    message: "Non è stato possibile rimuovere il membro. Riprova.",
+                });
+            }
+        });
     };
 
     // sync quando cambia family (es. refreshMe)
@@ -292,7 +335,7 @@ export function FamilyScreen() {
                 {/* BOTTOM — sheet */}
                 <View className="flex-[3] bg-auth-bg rounded-t-3xl pt-6">
                     <ScrollView
-                        contentContainerStyle={{ paddingBottom: 24 }}
+                        contentContainerStyle={{ paddingBottom: 110 }}
                         showsVerticalScrollIndicator={false}>
                         <View className="px-6">
                             <TextField
@@ -340,38 +383,15 @@ export function FamilyScreen() {
                             ) : (
                                 <View className="mt-3 gap-2">
                                     {members.map((m) => (
-                                        <View
+                                        <UserPill
                                             key={m.id}
-                                            className="flex-row items-center justify-between border-b border-auth-form px-6 py-3">
-                                            <View className="flex-row items-center gap-3 flex-1 pr-3">
-                                                <Avatar
-                                                    uri={m.profile_photo_url ?? undefined}
-                                                    name={`${m.firstname} ${m.lastname}`}
-                                                    size={40}
-                                                />
-                                                <View className="flex-1">
-                                                    <AppText
-                                                        weight="medium"
-                                                        className="text-text-main">
-                                                        {`${m.firstname} ${m.lastname}`}
-                                                    </AppText>
-                                                    {m.nickname ? (
-                                                        <View className="flex-row flex-wrap gap-1 items-center">
-                                                            <AppIcon
-                                                                name="information-circle-outline"
-                                                                color="#868686"
-                                                            />
-                                                            <AppText
-                                                                variant="placeholder"
-                                                                className="text-xs"
-                                                                weight="medium">
-                                                                {m.nickname}
-                                                            </AppText>
-                                                        </View>
-                                                    ) : null}
-                                                </View>
-                                            </View>
-                                        </View>
+                                            member={m}
+                                            isOpen={openMemberId === m.id}
+                                            onToggle={() => setOpenMemberId((prev) => (prev === m.id ? null : m.id))}
+                                            onClose={() => setOpenMemberId(null)}
+                                            onRemove={() => handleRemoveMember(m.id, `${m.firstname} ${m.lastname}`)}
+                                            isRemoving={removingMemberId === m.id}
+                                        />
                                     ))}
                                 </View>
                             )}

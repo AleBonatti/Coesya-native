@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 import { create } from "zustand";
 import { api, ApiError } from "../lib/api";
-import type { CreateFamilyRequest, CreateFamilyResponse, Family, UpdateFamilyRequest, UpdateFamilyResponse, UploadFamilyPhotoResponse, FamilyMember, FamilyMembersResponse, SaveFamilyCodeResponse, JoinFamilyResponse } from "./familyTypes";
+import type { CreateFamilyRequest, CreateFamilyResponse, Family, UpdateFamilyRequest, UpdateFamilyResponse, UploadFamilyPhotoResponse, FamilyMember, FamilyMembersResponse, SaveFamilyCodeResponse, JoinFamilyResponse, RemoveMemberResponse } from "./familyTypes";
 
 import type * as ImagePicker from "expo-image-picker";
 
@@ -23,8 +23,10 @@ interface FamilyState {
     members: FamilyMember[];
     isLoadingMembers: boolean;
     membersError: string | null;
+    removingMemberId: number | null;
 
     fetchMembers: (familyId: number) => Promise<void>;
+    removeMember: (familyId: number, userId: number) => Promise<void>;
     clearMembersError: () => void;
 
     clearFieldError: (field: keyof FamilyFieldErrorMap) => void;
@@ -49,6 +51,7 @@ export const useFamilyStore = create<FamilyState>((set) => ({
     members: [],
     isLoadingMembers: false,
     membersError: null,
+    removingMemberId: null,
 
     clearMembersError: () => set({ membersError: null }),
 
@@ -214,6 +217,20 @@ export const useFamilyStore = create<FamilyState>((set) => ({
         } catch (e) {
             const msg = e instanceof ApiError ? e.message : "Errore nel caricamento dei membri.";
             set({ isLoadingMembers: false, membersError: msg });
+        }
+    },
+
+    removeMember: async (familyId: number, userId: number) => {
+        set({ removingMemberId: userId });
+        try {
+            await api.del<RemoveMemberResponse>(`/family/${familyId}/member/${userId}`);
+            set((state) => ({
+                removingMemberId: null,
+                members: state.members.filter((m) => m.id !== userId),
+            }));
+        } catch (e) {
+            set({ removingMemberId: null });
+            throw e;
         }
     },
 
