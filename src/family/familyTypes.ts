@@ -51,3 +51,7 @@ export interface JoinFamilyResponse {
     success: "ok";
     family: Family;
 }
+
+export interface RemoveMemberResponse {
+    success: "ok";
+}
