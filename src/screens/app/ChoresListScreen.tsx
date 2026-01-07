@@ -7,7 +7,7 @@ import type { ChoresStackParamList } from "../../navigation/ChoresStack";
 import { AppShell } from "../../components/layout/AppShell";
 import { AppText } from "../../components/ui/AppText";
 import { Button } from "../../components/ui/Button";
-import { LinkText } from "../../components/ui/LinkText";
+import { SectionTitle } from "../../components/ui/SectionTitle";
 import { useChoresStore } from "../../chores/choreStore";
 import type { Chore } from "../../chores/choreTypes";
 import { CategoryIcon } from "../../components/chores/CategoryIcon";
@@ -44,19 +44,11 @@ export function ChoresListScreen() {
             showHeader={false}
             padded={false}>
             <View className="mt-4">
-                <View className="flex-row items-center mb-6 mt-4 gap-3 px-4">
-                    <AppIcon
-                        name="chevron-back"
-                        size={24}
-                        color="#121212"
-                    />
-                    <LinkText
+                <View className="px-6">
+                    <SectionTitle
+                        label="Gestione impegni"
                         variant="dark"
-                        weight="medium"
-                        onPress={() => navigation.goBack()}
-                        className="text-xl font-medium">
-                        Gestione impegni
-                    </LinkText>
+                    />
                 </View>
                 {isLoadingAll ? (
                     <View className="py-10 items-center">

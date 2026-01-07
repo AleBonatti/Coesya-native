@@ -16,7 +16,7 @@ export function AppShell({ children, backgroundClassName = "bg-transparent", sho
         <Screen backgroundClassName={backgroundClassName}>
             <View className="flex-1">
                 {showHeader ? <AppHeader /> : null}
-                <View className={`flex-1 ${padded ? "px-6 pt-4" : ""}`}>
+                <View className={`flex-1 ${padded ? "px-8 pt-4" : ""}`}>
                     {children}
                     <NotificationHost />
                 </View>

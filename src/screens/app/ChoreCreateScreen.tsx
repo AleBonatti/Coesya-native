@@ -14,7 +14,7 @@ import { TextField } from "../../components/ui/TextField";
 import { Button } from "../../components/ui/Button";
 import { Checkbox } from "../../components/ui/Checkbox"; // il tuo checkbox con label clickabile
 import { useChoresStore } from "../../chores/choreStore";
-import { LinkText } from "../../components/ui/LinkText";
+import { SectionTitle } from "../../components/ui/SectionTitle";
 import { SelectField, type SelectOption } from "../../components/ui/SelectField";
 
 type Nav = NativeStackNavigationProp<ChoresStackParamList>;
@@ -172,22 +172,10 @@ export function ChoreCreateScreen() {
                 <ScrollView
                     contentContainerStyle={{ flexGrow: 1, paddingBottom: 140 }}
                     keyboardShouldPersistTaps="handled">
-                    <View className="flex-row items-center justify-between pt-2 mb-4">
-                        <Pressable className="flex-row items-center gap-2 py-2">
-                            <AppIcon
-                                name="chevron-back"
-                                size={22}
-                                color="#121212"
-                            />
-                            <LinkText
-                                onPress={() => navigation.goBack()}
-                                variant="dark"
-                                weight="medium"
-                                className="text-xl font-medium">
-                                Elenco impegni
-                            </LinkText>
-                        </Pressable>
-                    </View>
+                    <SectionTitle
+                        label="Elenco impegni"
+                        variant="dark"
+                    />
 
                     {createError ? (
                         <Pressable

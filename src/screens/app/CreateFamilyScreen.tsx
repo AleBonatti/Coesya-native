@@ -1,23 +1,18 @@
 import React, { useState } from "react";
 import { View, Image } from "react-native";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import { useAuthStore } from "../../auth/authStore";
 
-import { AppIcon } from "../../components/ui/AppIcon";
 import { AppShell } from "../../components/layout/AppShell";
 import { AppText } from "../../components/ui/AppText";
-import { LinkText } from "../../components/ui/LinkText";
+import { SectionTitle } from "../../components/ui/SectionTitle";
 import { TextField } from "../../components/ui/TextField";
 import { Button } from "../../components/ui/Button";
 import { useFamilyStore } from "../../family/familyStore";
-import { MainStackParamList } from "../../navigation/MainStackParamList";
 
 const logo = require("../../../assets/upload.png");
 
-type Props = NativeStackScreenProps<MainStackParamList, "CreateFamily">;
-
-export function CreateFamilyScreen({ navigation }: Props) {
+export function CreateFamilyScreen() {
     const [name, setName] = useState<string>("");
 
     const createFamily = useFamilyStore((s) => s.createFamily);
@@ -45,19 +40,10 @@ export function CreateFamilyScreen({ navigation }: Props) {
 
     return (
         <AppShell backgroundClassName="bg-transparent">
-            <View className="flex-row items-center mb-6 mt-4 gap-3">
-                <AppIcon
-                    name="chevron-back"
-                    size={24}
-                    color="#FFFFFF"
-                />
-                <LinkText
-                    variant="secondary"
-                    onPress={() => navigation.goBack()}
-                    className="text-lg font-medium">
-                    Nuova famiglia
-                </LinkText>
-            </View>
+            <SectionTitle
+                label="Nuova famiglia"
+                variant="light"
+            />
             <AppText variant="light">Assegna un nome alla tua nuova famiglia. Può essere il cognome di famiglia o un titolo originale: lascia spazio alla tua creatività! Non preoccuparti, potrai cambiarlo in seguito.</AppText>
 
             <View className="items-center justify-center">

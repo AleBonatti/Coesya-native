@@ -36,7 +36,7 @@ export function Button({ title, onPress, variant = "primary", size = "md", class
 
     const textStyles: Record<ButtonVariant, string> = {
         primary: "primary text-white",
-        secondary: "font-sansSemibold text-white",
+        secondary: "font-sansSemibold text-brand-darker",
         tertiary: "font-sansMedium text-white",
         dark: "text-white",
         ghost: "font-sansSemibold text-white",
