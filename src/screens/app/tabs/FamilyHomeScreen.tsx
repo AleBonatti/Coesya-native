@@ -66,17 +66,19 @@ export function FamilyHomeScreen() {
                 ) : (
                     <>
                         <View className="w-full flex-row items-center justify-between pt-4 pb-8">
-                            <Avatar
-                                uri={family.profile_photo_url}
-                                name={family.name}
-                                size={70}
-                            />
+                            <View className="flex-row items-center gap-5">
+                                <Avatar
+                                    uri={family.profile_photo_url}
+                                    name={family.name}
+                                    size={70}
+                                />
 
-                            <AppText
-                                className="text-xl"
-                                weight="medium">
-                                {family.name}
-                            </AppText>
+                                <AppText
+                                    className="text-xl"
+                                    weight="medium">
+                                    {family.name}
+                                </AppText>
+                            </View>
 
                             <IconButton
                                 icon="arrow-forward"
