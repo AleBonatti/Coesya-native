@@ -1,8 +1,8 @@
 import { Platform } from "react-native";
 import { create } from "zustand";
 import { api, ApiError } from "../lib/api";
-import type { CreateFamilyRequest, CreateFamilyResponse, Family, UpdateFamilyRequest, UpdateFamilyResponse, UploadFamilyPhotoResponse, FamilyMember, FamilyMembersResponse, SaveFamilyCodeResponse } from "./familyTypes";
-// familyStore.ts
+import type { CreateFamilyRequest, CreateFamilyResponse, Family, UpdateFamilyRequest, UpdateFamilyResponse, UploadFamilyPhotoResponse, FamilyMember, FamilyMembersResponse, SaveFamilyCodeResponse, JoinFamilyResponse } from "./familyTypes";
+
 import type * as ImagePicker from "expo-image-picker";
 
 type FamilyFieldErrorMap = Partial<Record<"name", string>>;
@@ -34,6 +34,9 @@ interface FamilyState {
     inviteCodeError: string | null;
     saveInviteCode: (familyId: number) => Promise<void>;
     clearInviteCodeError: () => void;
+
+    isJoining: boolean;
+    joinFamily: (code: string) => Promise<Family>;
 }
 
 export const useFamilyStore = create<FamilyState>((set) => ({
@@ -61,6 +64,8 @@ export const useFamilyStore = create<FamilyState>((set) => ({
     isSavingInviteCode: false,
     inviteCodeError: null,
     clearInviteCodeError: () => set({ inviteCodeError: null }),
+
+    isJoining: false,
 
     createFamily: async (data) => {
         set({ isCreating: true, formError: null, fieldErrors: {} });
@@ -220,6 +225,33 @@ export const useFamilyStore = create<FamilyState>((set) => ({
         } catch (e) {
             const msg = e instanceof ApiError ? e.message : "Errore nel salvataggio del codice invito.";
             set({ isSavingInviteCode: false, inviteCodeError: msg });
+            throw e;
+        }
+    },
+
+    joinFamily: async (code: string) => {
+        set({ isJoining: true });
+
+        const minDelayMs = 800;
+        const startedAt = Date.now();
+
+        try {
+            const res = await api.post<JoinFamilyResponse>("/family/join", { code });
+
+            const elapsed = Date.now() - startedAt;
+            if (elapsed < minDelayMs) {
+                await new Promise<void>((r) => setTimeout(r, minDelayMs - elapsed));
+            }
+
+            set({ isJoining: false });
+            return res.family;
+        } catch (e) {
+            const elapsed = Date.now() - startedAt;
+            if (elapsed < minDelayMs) {
+                await new Promise<void>((r) => setTimeout(r, minDelayMs - elapsed));
+            }
+
+            set({ isJoining: false });
             throw e;
         }
     },

@@ -12,7 +12,7 @@ import { useFamilyStore } from "../../family/familyStore";
 
 const logo = require("../../../assets/upload.png");
 
-export function CreateFamilyScreen() {
+export function WizardCreateFamilyScreen() {
     const [name, setName] = useState<string>("");
 
     const createFamily = useFamilyStore((s) => s.createFamily);
@@ -54,7 +54,7 @@ export function CreateFamilyScreen() {
                 />
             </View>
 
-            {formError ? <AppText className="text-red-500 text-sm mb-3 text-center">{formError}</AppText> : null}
+            {formError ? <AppText className="text-red-200 text-sm mb-3 text-center">{formError}</AppText> : null}
 
             <TextField
                 size="md"

@@ -272,7 +272,6 @@ export const useChoresStore = create<ChoresState>((set, get) => ({
         const startedAt = Date.now();
 
         try {
-            console.log(choreId, data, data.category_id);
             const res = await api.patch<UpdateChoreResponse>(`/chores/${choreId}`, {
                 title: data.title,
                 frequency: data.frequency,

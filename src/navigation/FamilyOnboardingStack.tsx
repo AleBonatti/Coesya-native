@@ -1,9 +1,9 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { FamilyWizardHomeScreen } from "../screens/app/FamilyWizardHomeScreen";
-import { CreateFamilyScreen } from "../screens/app/CreateFamilyScreen";
-import { JoinFamilyScreen } from "../screens/app/JoinFamilyScreen";
+import { WizardHomeScreen } from "../screens/app/WizardHomeScreen";
+import { WizardCreateFamilyScreen } from "../screens/app/WizardCreateFamilyScreen";
+import { WizardJoinFamilyScreen } from "../screens/app/WizardJoinFamilyScreen";
 import { MainStackParamList } from "./MainStackParamList";
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
@@ -16,16 +16,16 @@ export function FamilyOnboardingStack() {
                 contentStyle: { backgroundColor: "transparent" },
             }}>
             <Stack.Screen
-                name="FamilyWizardHome"
-                component={FamilyWizardHomeScreen}
+                name="WizardHome"
+                component={WizardHomeScreen}
             />
             <Stack.Screen
-                name="CreateFamily"
-                component={CreateFamilyScreen}
+                name="WizardCreateFamily"
+                component={WizardCreateFamilyScreen}
             />
             <Stack.Screen
-                name="JoinFamily"
-                component={JoinFamilyScreen}
+                name="WizardJoinFamily"
+                component={WizardJoinFamilyScreen}
             />
         </Stack.Navigator>
     );

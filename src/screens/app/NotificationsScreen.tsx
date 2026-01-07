@@ -6,7 +6,7 @@ export function NotificationsScreen() {
     return (
         <AppShell>
             <View className="pt-6">
-                <Text className="text-xl font-semibold text-text-main">Notifications</Text>
+                <Text className="text-xl font-sans text-text-main">Notifications</Text>
             </View>
         </AppShell>
     );
