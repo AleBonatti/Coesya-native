@@ -46,7 +46,7 @@ export function AppHeader() {
                 CommonActions.navigate({
                     name: "Main",
                     params: {
-                        screen: "FamilyWizardHome",
+                        screen: "WizardHome",
                     },
                 })
             );

@@ -9,48 +9,62 @@ import { Button } from "../../components/ui/Button";
 import { CodeInput } from "../../components/ui/CodeInput";
 import { useFamilyStore } from "../../family/familyStore";
 import { useNotificationStore } from "../../components/notifications/notificationStore";
+import { ApiError } from "../../lib/api";
 
-export function JoinFamilyScreen() {
-    const notify = useNotificationStore((s) => s.show);
+export function WizardJoinFamilyScreen() {
     const [code, setCode] = useState<string>("");
 
+    const notify = useNotificationStore((s) => s.show);
     const joinFamily = useFamilyStore((s) => s.joinFamily);
     const isJoining = useFamilyStore((s) => s.isJoining);
-    const joinError = useFamilyStore((s) => s.joinError);
-    const joinSuccess = useFamilyStore((s) => s.joinSuccess);
-    const clearJoinError = useFamilyStore((s) => s.clearJoinError);
-    const clearJoinSuccess = useFamilyStore((s) => s.clearJoinSuccess);
 
     const refreshMe = useAuthStore((s) => s.refreshMe);
-
-    React.useEffect(() => {
-        if (joinSuccess) {
-            notify({
-                type: "success",
-                title: joinSuccess,
-            });
-            clearJoinSuccess();
-        }
-    }, [joinSuccess, notify, clearJoinSuccess]);
-
-    React.useEffect(() => {
-        if (joinError) {
-            notify({
-                type: "error",
-                title: joinError,
-            });
-            clearJoinError();
-        }
-    }, [joinError, notify, clearJoinError]);
 
     const handleJoin = async () => {
         try {
             await joinFamily(code);
             await refreshMe();
-            // Reset code after success
             setCode("");
-        } catch {
-            // errori già gestiti nello store
+
+            notify({
+                type: "success",
+                title: "Risultato operazione:",
+                message: "Ti sei unito alla famiglia con successo!",
+            });
+        } catch (e) {
+            if (e instanceof ApiError) {
+                let errorMessage: string;
+
+                switch (e.status) {
+                    case 422:
+                        errorMessage = "Codice mancante o non valido";
+                        break;
+                    case 404:
+                        errorMessage = "Famiglia non trovata o codice non valido";
+                        break;
+                    case 409:
+                        errorMessage = "Sei già membro di questa famiglia";
+                        break;
+                    case 401:
+                    case 403:
+                        errorMessage = "Non hai i permessi per unirti a questa famiglia";
+                        break;
+                    default:
+                        errorMessage = "Si è verificato un errore. Riprova tra poco.";
+                }
+
+                notify({
+                    type: "error",
+                    title: "Attenzione!",
+                    message: errorMessage,
+                });
+            } else {
+                notify({
+                    type: "error",
+                    title: "Attenzione!",
+                    message: "Si è verificato un errore. Riprova tra poco.",
+                });
+            }
         }
     };
 
@@ -73,9 +87,7 @@ export function JoinFamilyScreen() {
                 <CodeInput
                     length={5}
                     value={code}
-                    onChange={(newCode) => {
-                        setCode(newCode);
-                    }}
+                    onChange={setCode}
                     disabled={isJoining}
                 />
             </View>

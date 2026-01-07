@@ -12,7 +12,7 @@ import { useFamilyStore } from "../../family/familyStore";
 
 const logo = require("../../../assets/upload.png");
 
-export function CreateFamilyScreen() {
+export function WizardCreateFamilyScreen() {
     const [name, setName] = useState<string>("");
 
     const createFamily = useFamilyStore((s) => s.createFamily);

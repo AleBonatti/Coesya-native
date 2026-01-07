@@ -46,7 +46,7 @@ export function NotificationHost() {
                         className="text-white">
                         {current.title}
                     </AppText>
-                    {current.message ? <AppText className="text-text-main mt-1">{current.message}</AppText> : null}
+                    {current.message ? <AppText className="text-white mt-1">{current.message}</AppText> : null}
                 </Pressable>
             </Animated.View>
         </View>

@@ -1,6 +1,6 @@
 import { getToken } from "./secureStore";
 
-const API_BASE_URL = "http://api.coesya.test/api";
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://api.coesya.test/api";
 
 export type ValidationErrors = Record<string, string[]>;
 
@@ -49,9 +49,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
             }
 
             if (res.status === 401) {
-                const message = "Invalid data.";
-                const errors = (data as { errors?: ValidationErrors }).errors;
-                throw new ApiError(message, 422, errors);
+                const message = "Unauthorized";
+                throw new ApiError(message, 401);
             }
 
             const message = data && typeof data === "object" && "message" in (data as Record<string, unknown>) && typeof (data as Record<string, unknown>).message === "string" ? ((data as Record<string, unknown>).message as string) : res.statusText;

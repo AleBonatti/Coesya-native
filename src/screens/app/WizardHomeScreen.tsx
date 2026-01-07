@@ -7,9 +7,9 @@ import { Button } from "../../components/ui/Button";
 import { AppText } from "../../components/ui/AppText";
 import { MainStackParamList } from "../../navigation/MainStackParamList";
 
-type Props = NativeStackScreenProps<MainStackParamList, "FamilyWizardHome">;
+type Props = NativeStackScreenProps<MainStackParamList, "WizardHome">;
 
-export function FamilyWizardHomeScreen({ navigation }: Props) {
+export function WizardHomeScreen({ navigation }: Props) {
     return (
         <AppShell backgroundClassName="bg-transparent">
             <View className="flex-1 justify-end pb-6">
@@ -41,13 +41,13 @@ export function FamilyWizardHomeScreen({ navigation }: Props) {
 
                     <View className="gap-3">
                         <Button
-                            onPress={() => navigation.navigate("CreateFamily")}
+                            onPress={() => navigation.navigate("WizardCreateFamily")}
                             title="Nuova famiglia"
                             variant="secondary"
                         />
 
                         <Button
-                            onPress={() => navigation.navigate("JoinFamily")}
+                            onPress={() => navigation.navigate("WizardJoinFamily")}
                             title="Unisciti con codice"
                         />
                     </View>
