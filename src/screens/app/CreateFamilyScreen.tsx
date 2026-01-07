@@ -54,7 +54,7 @@ export function CreateFamilyScreen() {
                 />
             </View>
 
-            {formError ? <AppText className="text-red-500 text-sm mb-3 text-center">{formError}</AppText> : null}
+            {formError ? <AppText className="text-red-200 text-sm mb-3 text-center">{formError}</AppText> : null}
 
             <TextField
                 size="md"

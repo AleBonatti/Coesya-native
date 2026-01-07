@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 import { create } from "zustand";
 import { api, ApiError } from "../lib/api";
-import type { CreateFamilyRequest, CreateFamilyResponse, Family, UpdateFamilyRequest, UpdateFamilyResponse, UploadFamilyPhotoResponse, FamilyMember, FamilyMembersResponse, SaveFamilyCodeResponse } from "./familyTypes";
+import type { CreateFamilyRequest, CreateFamilyResponse, Family, UpdateFamilyRequest, UpdateFamilyResponse, UploadFamilyPhotoResponse, FamilyMember, FamilyMembersResponse, SaveFamilyCodeResponse, JoinFamilyRequest, JoinFamilyResponse } from "./familyTypes";
 // familyStore.ts
 import type * as ImagePicker from "expo-image-picker";
 
@@ -34,6 +34,13 @@ interface FamilyState {
     inviteCodeError: string | null;
     saveInviteCode: (familyId: number) => Promise<void>;
     clearInviteCodeError: () => void;
+
+    isJoining: boolean;
+    joinError: string | null;
+    joinSuccess: string | null;
+    joinFamily: (code: string) => Promise<Family>;
+    clearJoinError: () => void;
+    clearJoinSuccess: () => void;
 }
 
 export const useFamilyStore = create<FamilyState>((set) => ({
@@ -61,6 +68,12 @@ export const useFamilyStore = create<FamilyState>((set) => ({
     isSavingInviteCode: false,
     inviteCodeError: null,
     clearInviteCodeError: () => set({ inviteCodeError: null }),
+
+    isJoining: false,
+    joinError: null,
+    joinSuccess: null,
+    clearJoinError: () => set({ joinError: null }),
+    clearJoinSuccess: () => set({ joinSuccess: null }),
 
     createFamily: async (data) => {
         set({ isCreating: true, formError: null, fieldErrors: {} });
@@ -220,6 +233,43 @@ export const useFamilyStore = create<FamilyState>((set) => ({
         } catch (e) {
             const msg = e instanceof ApiError ? e.message : "Errore nel salvataggio del codice invito.";
             set({ isSavingInviteCode: false, inviteCodeError: msg });
+            throw e;
+        }
+    },
+
+    joinFamily: async (code: string) => {
+        set({ isJoining: true, joinError: null, joinSuccess: null });
+
+        const minDelayMs = 450;
+        const startedAt = Date.now();
+
+        try {
+            const res = await api.post<JoinFamilyResponse>("/family/join", { code });
+
+            const elapsed = Date.now() - startedAt;
+            if (elapsed < minDelayMs) {
+                await new Promise<void>((r) => setTimeout(r, minDelayMs - elapsed));
+            }
+
+            set({ isJoining: false, joinError: null, joinSuccess: "Ti sei unito alla famiglia con successo!" });
+            return res.family;
+        } catch (e) {
+            const elapsed = Date.now() - startedAt;
+            if (elapsed < minDelayMs) {
+                await new Promise<void>((r) => setTimeout(r, minDelayMs - elapsed));
+            }
+
+            if (e instanceof ApiError && (e.status === 404 || e.status === 422)) {
+                set({ isJoining: false, joinError: "Codice non corretto. Riprova.", joinSuccess: null });
+                throw e;
+            }
+
+            if (e instanceof ApiError && (e.status === 401 || e.status === 403)) {
+                set({ isJoining: false, joinError: "Non hai i permessi per unirti a questa famiglia.", joinSuccess: null });
+                throw e;
+            }
+
+            set({ isJoining: false, joinError: "Si è verificato un errore. Riprova tra poco.", joinSuccess: null });
             throw e;
         }
     },

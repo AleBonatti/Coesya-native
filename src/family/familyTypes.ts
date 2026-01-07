@@ -42,3 +42,12 @@ export interface FamilyMembersResponse {
 export interface SaveFamilyCodeResponse {
     success: "ok";
 }
+
+export interface JoinFamilyRequest {
+    code: string;
+}
+
+export interface JoinFamilyResponse {
+    success: "ok";
+    family: Family;
+}
